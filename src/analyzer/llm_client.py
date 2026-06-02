@@ -41,9 +41,9 @@ def load_llm_config(settings_path: str | None = None, model_override: str | None
     """按优先级读取 LLM 配置。
 
     优先级：
-    1. 进程环境变量
-    2. 指定 settings 文件
-    3. ~/.claude/settings.json
+    1. 指定 settings 文件
+    2. ~/.claude/settings.json
+    3. 进程环境变量
     """
     env_base_url = os.environ.get("ANTHROPIC_BASE_URL")
     env_auth_token = os.environ.get("ANTHROPIC_AUTH_TOKEN")
@@ -57,9 +57,9 @@ def load_llm_config(settings_path: str | None = None, model_override: str | None
         settings_payload = _load_settings_file(candidate_path)
 
     settings_env = settings_payload.get("env", {}) if isinstance(settings_payload.get("env", {}), dict) else {}
-    base_url = env_base_url or settings_env.get("ANTHROPIC_BASE_URL")
-    auth_token = env_auth_token or settings_env.get("ANTHROPIC_AUTH_TOKEN")
-    model = model_override or env_model or settings_env.get("ANTHROPIC_MODEL") or settings_payload.get("model") or DEFAULT_MODEL
+    base_url = settings_env.get("ANTHROPIC_BASE_URL") or env_base_url
+    auth_token = settings_env.get("ANTHROPIC_AUTH_TOKEN") or env_auth_token
+    model = model_override or settings_env.get("ANTHROPIC_MODEL") or settings_payload.get("model") or env_model or DEFAULT_MODEL
 
     if not base_url:
         raise LlmConfigError("missing ANTHROPIC_BASE_URL")
@@ -74,20 +74,30 @@ def load_llm_config(settings_path: str | None = None, model_override: str | None
     )
 
 
-def _messages_endpoint(base_url: str) -> str:
-    """根据 base_url 推导 messages API endpoint。"""
-    if base_url.endswith("/v1/messages"):
+def _chat_endpoint(base_url: str) -> str:
+    """根据 base_url 推导 OpenAI-compatible chat completions endpoint。"""
+    if base_url.endswith("/chat/completions"):
         return base_url
     if base_url.endswith("/v1"):
-        return f"{base_url}/messages"
-    return f"{base_url}/v1/messages"
+        return f"{base_url}/chat/completions"
+    return f"{base_url}/v1/chat/completions"
 
 
 def _extract_text_from_response(payload: dict[str, Any]) -> str:
-    """从 Anthropic-compatible messages 响应中提取纯文本。"""
+    """从 OpenAI-compatible 或 Anthropic-compatible 响应中提取纯文本。"""
+    choices = payload.get("choices")
+    if isinstance(choices, list) and choices:
+        first_choice = choices[0]
+        if isinstance(first_choice, dict):
+            message = first_choice.get("message")
+            if isinstance(message, dict) and isinstance(message.get("content"), str):
+                text = message["content"].strip()
+                if text:
+                    return text
+
     content = payload.get("content")
     if not isinstance(content, list):
-        raise LlmRequestError("invalid response: missing content list")
+        raise LlmRequestError("invalid response: missing choices or content list")
 
     chunks: list[str] = []
     for item in content:
@@ -104,7 +114,7 @@ def _extract_text_from_response(payload: dict[str, Any]) -> str:
 def invoke_llm(prompt: str, settings_path: str | None = None, model_override: str | None = None, timeout: int = 60) -> tuple[str, LlmConfig]:
     """调用 LLM 并返回文本结果与实际使用的配置。"""
     config = load_llm_config(settings_path=settings_path, model_override=model_override)
-    endpoint = _messages_endpoint(config.base_url)
+    endpoint = _chat_endpoint(config.base_url)
     request_payload = {
         "model": config.model,
         "max_tokens": 1200,

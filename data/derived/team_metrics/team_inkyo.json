@@ -1,0 +1,118 @@
+{
+  "canonical_id": "team_inkyo",
+  "rank_trend": [
+    {
+      "contest_id": "cf_2207",
+      "rank": 104,
+      "percentile_rank": 0.9838
+    }
+  ],
+  "tag_distribution": {
+    "binary search": {
+      "attempted": 2,
+      "solved": 0,
+      "solve_rate": 0.0
+    },
+    "combinatorics": {
+      "attempted": 1,
+      "solved": 1,
+      "solve_rate": 1.0
+    },
+    "constructive algorithms": {
+      "attempted": 6,
+      "solved": 2,
+      "solve_rate": 0.3333
+    },
+    "data structures": {
+      "attempted": 2,
+      "solved": 1,
+      "solve_rate": 0.5
+    },
+    "dfs and similar": {
+      "attempted": 2,
+      "solved": 1,
+      "solve_rate": 0.5
+    },
+    "divide and conquer": {
+      "attempted": 4,
+      "solved": 1,
+      "solve_rate": 0.25
+    },
+    "dp": {
+      "attempted": 3,
+      "solved": 2,
+      "solve_rate": 0.6667
+    },
+    "dsu": {
+      "attempted": 2,
+      "solved": 0,
+      "solve_rate": 0.0
+    },
+    "flows": {
+      "attempted": 1,
+      "solved": 0,
+      "solve_rate": 0.0
+    },
+    "games": {
+      "attempted": 2,
+      "solved": 2,
+      "solve_rate": 1.0
+    },
+    "graph matchings": {
+      "attempted": 1,
+      "solved": 0,
+      "solve_rate": 0.0
+    },
+    "graphs": {
+      "attempted": 1,
+      "solved": 0,
+      "solve_rate": 0.0
+    },
+    "greedy": {
+      "attempted": 5,
+      "solved": 3,
+      "solve_rate": 0.6
+    },
+    "interactive": {
+      "attempted": 3,
+      "solved": 0,
+      "solve_rate": 0.0
+    },
+    "math": {
+      "attempted": 2,
+      "solved": 2,
+      "solve_rate": 1.0
+    },
+    "shortest paths": {
+      "attempted": 1,
+      "solved": 1,
+      "solve_rate": 1.0
+    },
+    "sortings": {
+      "attempted": 1,
+      "solved": 1,
+      "solve_rate": 1.0
+    },
+    "strings": {
+      "attempted": 1,
+      "solved": 1,
+      "solve_rate": 1.0
+    },
+    "trees": {
+      "attempted": 4,
+      "solved": 1,
+      "solve_rate": 0.25
+    },
+    "two pointers": {
+      "attempted": 2,
+      "solved": 0,
+      "solve_rate": 0.0
+    }
+  },
+  "stability_score": 1.0,
+  "growth_score": null,
+  "solve_pace": {
+    "avg_first_ac_minute": 70.0,
+    "late_stage_solve_ratio": 0.3333
+  }
+}

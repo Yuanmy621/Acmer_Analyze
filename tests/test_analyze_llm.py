@@ -77,7 +77,7 @@ class LlmAnalyzeTest(unittest.TestCase):
 
             payload = self._read_insight(root_dir)
             self.assertEqual(payload["model_used"], "gpt-test")
-            self.assertEqual(payload["llm_provider"], "anthropic-compatible")
+            self.assertEqual(payload["llm_provider"], "openai-compatible")
             self.assertIn("implementation", payload["strengths"][0])
 
     def test_run_analyze_raises_on_llm_error(self) -> None:

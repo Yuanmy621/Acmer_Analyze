@@ -76,7 +76,7 @@ def _build_llm_insight(context: PipelineContext, identity: dict, history: dict, 
         "stage_analysis": str(parsed["stage_analysis"]),
         "model_used": config.model,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "llm_provider": "anthropic-compatible",
+        "llm_provider": "openai-compatible",
         "llm_settings_path": config.settings_path,
     }
 
