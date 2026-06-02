@@ -115,12 +115,12 @@
       <article class="sheet">
         <div class="eyebrow">Visual Analysis Board</div>
         <h1>tourist</h1>
-        <p class="lede">tourist 的历史表现显示，整体表现较稳定，当前历史样本较少，成长趋势仍需继续观察。</p>
+        <p class="lede">从现有数据看，tourist 仅有 1 场记录比赛，且在该场比赛中获得第 1 名、完成 1 题并一次通过，表现出较快的开题与稳定通过能力；但由于样本极少，当前结论更多反映单场表现，不能据此全面判断长期实力结构。</p>
       </article>
       <aside class="meta-stack">
         <div class="meta-box"><span>canonical_id</span><strong>team_tourist</strong></div>
-        <div class="meta-box"><span>model_used</span><strong>rule-based-template</strong></div>
-        <div class="meta-box"><span>generated_at</span><strong>2026-06-02T04:15:08.881831+00:00</strong></div>
+        <div class="meta-box"><span>model_used</span><strong>gpt-5.4</strong></div>
+        <div class="meta-box"><span>generated_at</span><strong>2026-06-02T04:33:55.293308+00:00</strong></div>
       </aside>
     </section>
 
@@ -167,21 +167,21 @@
         </article>
         <article class="sheet">
           <div class="section-title"><h2>优势标签</h2><small>Strengths</small></div>
-          <ul class="tag-cloud"><li class="strength-badge">unknown 题通过率较高（1.00）</li></ul>
+          <ul class="tag-cloud"><li class="strength-badge">唯一一场记录比赛中排名第 1，说明该场次结果表现非常靠前。</li><li class="strength-badge">唯一已记录题目 1 次提交即通过，体现出较好的提交准确性和稳定性。</li><li class="strength-badge">平均首个通过时间为 2 分钟，说明开局进入状态很快、早期拿分效率高。</li></ul>
         </article>
         <article class="sheet">
           <div class="section-title"><h2>短板标签</h2><small>Weaknesses</small></div>
-          <ul class="tag-cloud"><li class="weakness-badge">unknown 题通过率偏低（1.00）</li></ul>
+          <ul class="tag-cloud"><li class="weakness-badge">历史数据仅包含 1 场比赛和 1 道题，样本量过小，难以评估真实的长期竞争力与稳定区间。</li><li class="weakness-badge">题目标签分布只有 unknown，无法判断在具体算法方向上的强弱项。</li><li class="weakness-badge">当前没有后程解题记录，late stage solve ratio 为 0，难以分析持久作战和中后盘扩题能力。</li></ul>
         </article>
         <article class="sheet">
           <div class="section-title"><h2>阶段复盘</h2><small>Editorial note</small></div>
-          <div class="editorial-block">当前历史样本较少，成长趋势仍需继续观察</div>
+          <div class="editorial-block">从阶段数据看，tourist 在比赛前期表现非常突出，平均首个通过时间仅 2 分钟，说明开局读取题意、选择目标题和快速实现的效率很高；但由于目前只有一次前期通过记录且没有后期通过数据，现阶段只能确认其早段启动能力，尚无法判断中盘推进和后盘翻盘能力。</div>
         </article>
       </div>
     </section>
   </main>
   <script>
-    const payload = {"canonical_id": "team_tourist", "rank_trend": [{"contest_id": "cf_1987", "rank": 1, "percentile_rank": 1.0}], "tag_distribution": {"unknown": {"attempted": 1, "solved": 1, "solve_rate": 1.0}}, "strengths": ["unknown 题通过率较高（1.00）"], "weaknesses": ["unknown 题通过率偏低（1.00）"]};
+    const payload = {"canonical_id": "team_tourist", "rank_trend": [{"contest_id": "cf_1987", "rank": 1, "percentile_rank": 1.0}], "tag_distribution": {"unknown": {"attempted": 1, "solved": 1, "solve_rate": 1.0}}, "strengths": ["唯一一场记录比赛中排名第 1，说明该场次结果表现非常靠前。", "唯一已记录题目 1 次提交即通过，体现出较好的提交准确性和稳定性。", "平均首个通过时间为 2 分钟，说明开局进入状态很快、早期拿分效率高。"], "weaknesses": ["历史数据仅包含 1 场比赛和 1 道题，样本量过小，难以评估真实的长期竞争力与稳定区间。", "题目标签分布只有 unknown，无法判断在具体算法方向上的强弱项。", "当前没有后程解题记录，late stage solve ratio 为 0，难以分析持久作战和中后盘扩题能力。"]};
     document.querySelectorAll('.metric-bar > span').forEach((node) => {
       requestAnimationFrame(() => {
         node.style.width = `${node.dataset.width || 0}%`;

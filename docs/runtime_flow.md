@@ -306,8 +306,52 @@ python3 scripts/run_pipeline.py --task-file examples/sample_task.json --start-st
 
 ---
 
-## 7. 设计提醒
+## 7. 清理现有分析数据
+
+当前已提供独立清理脚本：
+
+```bash
+python3 scripts/clear_artifacts.py
+```
+
+### 按队伍清理
+
+```bash
+python3 scripts/clear_artifacts.py --target-team "ZJU Alpha"
+```
+
+说明：
+- 删除该队伍对应的 team_identity / team_history / team_metrics / insights / reports / visualizations / validation
+- 不删除共享的 raw / normalized 文件
+
+### 全量清理
+
+```bash
+python3 scripts/clear_artifacts.py --all
+```
+
+说明：
+- 删除 `data/` 与 `outputs/` 下当前运行生成的分析产物文件
+- 保留目录结构本身
+
+### dry-run 预览
+
+```bash
+python3 scripts/clear_artifacts.py --target-team "ZJU Alpha" --dry-run
+python3 scripts/clear_artifacts.py --all --dry-run
+```
+
+### 额外清理 bridge run 摘要
+
+```bash
+python3 scripts/clear_artifacts.py --target-team tourist --include-bridge-runs
+```
+
+---
+
+## 8. 设计提醒
 
 - 尽量不要让 LLM 直接替代 `normalize` 或 `compute_metrics`
 - 高层总结应可替换，但底层协议应尽量稳定
 - 若后续适配多个 provider，优先扩展 analyzer 内部客户端，而不是污染其他 stage
+- 共享 raw / normalized 文件目前是全局路径，因此按队伍清理只删除按队伍命名的 artifact
