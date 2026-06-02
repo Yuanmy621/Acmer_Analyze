@@ -1,0 +1,23 @@
+{
+  "canonical_id": "team_hook_delivery",
+  "rank_trend": [
+    {
+      "contest_id": "cf_1",
+      "rank": 1,
+      "percentile_rank": 1.0
+    }
+  ],
+  "tag_distribution": {
+    "implementation": {
+      "attempted": 1,
+      "solved": 1,
+      "solve_rate": 1.0
+    }
+  },
+  "strengths": [
+    "实现题稳定"
+  ],
+  "weaknesses": [
+    "样本较少"
+  ]
+}

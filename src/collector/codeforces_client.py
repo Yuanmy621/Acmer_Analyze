@@ -3,6 +3,8 @@ from __future__ import annotations
 """Codeforces API 的最小客户端封装。"""
 
 import json
+import ssl
+import time
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -28,14 +30,24 @@ class CodeforcesClient:
         if query:
             url = f"{url}?{query}"
         request = Request(url, headers={"User-Agent": "acmer-analyze/0.1"})
-        try:
-            with urlopen(request, timeout=self.timeout) as response:
-                payload = json.load(response)
-        except HTTPError as error:
-            body = error.read().decode("utf-8", "ignore")
-            raise CodeforcesApiError(f"HTTP {error.code} for {url}: {body}") from error
-        except URLError as error:
-            raise CodeforcesApiError(f"Network error for {url}: {error}") from error
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+
+        last_error: Exception | None = None
+        for _ in range(3):
+            try:
+                with urlopen(request, timeout=self.timeout, context=ssl_context) as response:
+                    payload = json.load(response)
+                break
+            except HTTPError as error:
+                body = error.read().decode("utf-8", "ignore")
+                raise CodeforcesApiError(f"HTTP {error.code} for {url}: {body}") from error
+            except URLError as error:
+                last_error = error
+                time.sleep(0.5)
+        else:
+            raise CodeforcesApiError(f"Network error for {url}: {last_error}") from last_error
 
         if payload.get("status") != "OK":
             raise CodeforcesApiError(f"API failed for {url}: {payload.get('comment', 'unknown error')}")

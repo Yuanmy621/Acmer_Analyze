@@ -1,0 +1,15 @@
+{
+  "canonical_id": "team_hook_delivery",
+  "generated_at": "2026-06-02T04:15:08.948081+00:00",
+  "format": "html",
+  "path": "outputs/visualizations/team_hook_delivery.html",
+  "chart_keys": [
+    "rank_trend",
+    "tag_distribution",
+    "strengths",
+    "weaknesses"
+  ],
+  "alternate_paths": [
+    "outputs/visualizations/team_hook_delivery.json"
+  ]
+}

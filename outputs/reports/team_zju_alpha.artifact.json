@@ -1,8 +1,8 @@
 {
   "canonical_id": "team_zju_alpha",
-  "generated_at": "2026-06-02T02:06:10.901886+00:00",
-  "format": "md",
-  "path": "outputs/reports/team_zju_alpha.md",
+  "generated_at": "2026-06-02T04:17:53.194037+00:00",
+  "format": "html",
+  "path": "outputs/reports/team_zju_alpha.html",
   "sections_present": [
     "overview",
     "trend",
@@ -10,5 +10,8 @@
     "strengths",
     "weaknesses",
     "advice"
+  ],
+  "alternate_paths": [
+    "outputs/reports/team_zju_alpha.md"
   ]
 }

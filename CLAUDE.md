@@ -40,6 +40,8 @@
 - 一套基于 **Python 标准库** 的最小可运行流水线实现
 - `scripts/run_pipeline.py` 作为当前 orchestrator CLI 入口，支持 task-file 和动态参数模式
 - `scripts/run_bridge.py` 作为本地 browser bridge 服务入口
+- `.claude/settings.json` 已接入 Claude 命令型 hooks
+- `.claude/hooks/` 同时承载运行期 hook 系统与命令型检查脚本
 - `examples/sample_task.json` 与 `examples/sample_fixture/` 作为本地 fixture 演示输入
 - `examples/codeforces_task.json` 作为真实 Codeforces 抓取示例任务
 - `examples/bridge_payload.json` 作为 browser bridge 导入协议示例

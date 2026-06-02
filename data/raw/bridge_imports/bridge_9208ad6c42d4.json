@@ -1,0 +1,12 @@
+{
+  "import_id": "bridge_9208ad6c42d4",
+  "source": "browser_bridge",
+  "site": "codeforces",
+  "target_team": "tourist",
+  "aliases": [
+    "tourist"
+  ],
+  "captured_at": "2026-06-01T10:00:00Z",
+  "page_url": "https://codeforces.com/contest/1987/standings",
+  "collector": "codeforces-standings-page"
+}

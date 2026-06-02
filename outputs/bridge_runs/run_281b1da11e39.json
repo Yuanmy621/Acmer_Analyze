@@ -1,0 +1,23 @@
+{
+  "run_id": "run_281b1da11e39",
+  "import_id": "bridge_db8a0052dad6",
+  "status": "completed",
+  "target_team": "tourist",
+  "executed_stages": [
+    "normalize",
+    "team_identity",
+    "build_history",
+    "compute_metrics",
+    "analyze",
+    "report",
+    "visualize",
+    "validate_final"
+  ],
+  "report_path": "outputs/reports/team_tourist.html",
+  "visualization_path": "outputs/visualizations/team_tourist.html",
+  "validation_path": "outputs/validation/team_tourist.json",
+  "started_at": "2026-06-02T02:43:27.762588+00:00",
+  "finished_at": "2026-06-02T02:43:40.568870+00:00",
+  "error": null,
+  "error_type": null
+}

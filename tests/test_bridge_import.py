@@ -49,6 +49,7 @@ class BridgeImportTest(unittest.TestCase):
                 import_id,
                 '--start-stage',
                 'normalize',
+                '--disable-llm-insight',
             ]
             completed = subprocess.run(command, cwd=ROOT_DIR, capture_output=True, text=True, check=True)
             result = json.loads(completed.stdout)
@@ -87,7 +88,8 @@ class BridgeImportTest(unittest.TestCase):
             self.assertTrue(body['ok'])
             self.assertEqual(body['status'], 'completed')
             self.assertTrue(body['run_id'].startswith('run_'))
-            self.assertTrue(body['report_path'].endswith('.md'))
+            self.assertTrue(body['report_path'].endswith('.html'))
+            self.assertTrue(body['visualization_path'].endswith('.html'))
 
             status_request = Request(f"http://127.0.0.1:8765/api/bridge/runs/{body['run_id']}")
             with urlopen(status_request, timeout=10) as response:

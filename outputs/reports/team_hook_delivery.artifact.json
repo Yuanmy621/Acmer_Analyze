@@ -1,0 +1,17 @@
+{
+  "canonical_id": "team_hook_delivery",
+  "generated_at": "2026-06-02T04:15:08.942389+00:00",
+  "format": "html",
+  "path": "outputs/reports/team_hook_delivery.html",
+  "sections_present": [
+    "overview",
+    "trend",
+    "topics",
+    "strengths",
+    "weaknesses",
+    "advice"
+  ],
+  "alternate_paths": [
+    "outputs/reports/team_hook_delivery.md"
+  ]
+}

@@ -2,8 +2,14 @@ from __future__ import annotations
 
 """pipeline 运行上下文与阶段顺序定义。"""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+import importlib.util
 from pathlib import Path
+import sys
+from types import ModuleType
+from typing import Any
+from uuid import uuid4
 
 from src.models.schemas import AnalysisTask
 
@@ -20,6 +26,19 @@ STAGE_SEQUENCE = [
     "validate_final",
 ]
 
+_HOOK_MANAGER_CLASS: type | None = None
+_HOOK_CONTEXT_CLASS: type | None = None
+
+
+def _load_module(module_name: str, file_path: Path) -> ModuleType:
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load module from {file_path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
 
 @dataclass(slots=True)
 class PipelineContext:
@@ -31,6 +50,8 @@ class PipelineContext:
 
     root_dir: Path
     task: AnalysisTask
+    run_id: str = field(default_factory=lambda: f"run_{uuid4().hex[:12]}")
+    _hook_manager: Any | None = field(default=None, init=False, repr=False)
 
     @property
     def fixture_dir(self) -> Path:
@@ -53,3 +74,45 @@ class PipelineContext:
         end_index = STAGE_SEQUENCE.index(end_stage) if end_stage else len(STAGE_SEQUENCE) - 1
         current_index = STAGE_SEQUENCE.index(stage_name)
         return start_index <= current_index <= end_index
+
+    def hook_manager(self) -> Any:
+        """懒加载 .claude/hooks 下的 HookManager。"""
+        global _HOOK_MANAGER_CLASS
+        if self._hook_manager is not None:
+            return self._hook_manager
+        if _HOOK_MANAGER_CLASS is None:
+            manager_module = _load_module(
+                "acmer_claude_hooks_manager",
+                self.root_dir / ".claude" / "hooks" / "common" / "manager.py",
+            )
+            _HOOK_MANAGER_CLASS = manager_module.HookManager
+        self._hook_manager = _HOOK_MANAGER_CLASS(self.root_dir)
+        return self._hook_manager
+
+    def new_hook_context(
+        self,
+        event_name: str,
+        *,
+        stage_name: str | None = None,
+        artifact_path: str | None = None,
+        payload: dict[str, Any] | None = None,
+        error: str | None = None,
+    ) -> Any:
+        """基于 .claude/hooks/common/context.py 构造 HookContext。"""
+        global _HOOK_CONTEXT_CLASS
+        if _HOOK_CONTEXT_CLASS is None:
+            context_module = _load_module(
+                "acmer_claude_hooks_context",
+                self.root_dir / ".claude" / "hooks" / "common" / "context.py",
+            )
+            _HOOK_CONTEXT_CLASS = context_module.HookContext
+        return _HOOK_CONTEXT_CLASS(
+            event_name=event_name,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            run_id=self.run_id,
+            canonical_id=self.canonical_id,
+            stage_name=stage_name,
+            artifact_path=artifact_path,
+            payload=payload or {},
+            error=error,
+        )

@@ -1,36 +1,44 @@
-# acmer_analyze
+# Acmer Analyze
 
-`acmer_analyze` 是一个面向 **ACM / 竞赛编程队伍分析** 的 Agent 项目。
+`acmer_analyze` 是一个面向 **ACM / 竞赛编程队伍分析** 的分析型 Agent 项目。
 
-项目希望围绕某支目标队伍，基于比赛排名、题目信息与历史参赛记录，生成：
+项目目标不是做一个“一次性把网页或榜单丢给模型，然后直接返回结论”的黑盒工具，而是围绕 **可编排、可追溯、可局部重跑、可扩展** 的思路，构建一条完整分析流水线。
+
+当前项目已经可以围绕一支目标队伍，基于比赛排名、题目信息与历史参赛记录，生成：
 
 - 排名变化分析
 - 技能树 / 题型能力分析
 - 优势与短板总结
-- 可视化分析报告
+- 训练建议
+- Markdown / HTML 报告
+- 单页可视化分析结果
 
 ---
 
-## 当前状态
+## 当前项目状态
 
 当前仓库已经具备：
 
-- 文档骨架与目录骨架
-- 基于 Python 标准库的最小可运行 pipeline
-- `source=fixture` 的本地联调能力
+- 一套基于 **Python 标准库** 的最小可运行 pipeline
+- 动态 CLI 参数模式
 - `source=codeforces` 的真实抓取能力
-- `source=browser_bridge` 的导入与下游执行能力
-- report / visualize / validate 的最小实现
-- **analyze 阶段的双模式能力**
-  - 默认优先走 LLM analyze
-  - LLM 失败时回退 `rule-based-template`
+- `source=browser_bridge` 的网页端导入能力
+- browser bridge `import-and-run` 自动分析链路
+- Codeforces standings 页面首版插件提取逻辑
+- `.claude/settings.json` 命令型 hooks
+- `.claude/hooks/` 运行期 hooks 体系
+- 完整的基础测试集
 
-当前仓库仍然不具备或不完整的能力包括：
+当前仓库仍然在持续演进，尚未完全具备：
 
 - UCUP 在线抓取能力
-- 更复杂的网页解析与多站点插件适配
-- 生产级 CI / lint / deploy 约定
-- 更成熟的 HTML 可视化交付
+- 多站点成熟插件适配
+- 复杂页面解析的长期鲁棒性保证
+- 完整的 build / lint / CI 工程体系
+
+因此，当前更准确的理解应是：
+
+> 已经完成从“文档骨架”到“首版可运行分析链路”的跨越，当前处于持续增强真实数据、插件链路与 hooks 体系的阶段。
 
 ---
 
@@ -38,32 +46,71 @@
 
 ### 1. pipeline 优先，而不是单次 prompt
 
-项目不是希望做成“一次性把原始网页喂给模型然后直接出结论”的黑盒，而是希望按阶段拆开：
+主流程按阶段拆开：
 
-1. collect
-2. normalize
-3. team_identity
-4. build_history
-5. compute_metrics
-6. analyze
-7. report
-8. visualize
-9. validate_final
+1. `collect`
+2. `normalize`
+3. `team_identity`
+4. `build_history`
+5. `compute_metrics`
+6. `analyze`
+7. `report`
+8. `visualize`
+9. `validate_final`
 
 ### 2. 确定性计算与自然语言解释分层
 
 - `compute_metrics` 负责确定性指标计算
 - `analyze` 负责高层解释、总结、建议
-- LLM 只应该增强解释层，不应替代底层数据清洗和指标统计
+- LLM 只增强解释层，不替代数据清洗和指标统计
 
 ### 3. artifact 可追溯
 
-每个阶段都应把中间结果落盘，便于：
+每个阶段都把结果落盘，便于：
 
 - 检查问题
 - 局部重跑
 - 回溯错误
 - 替换具体实现而不破坏整体结构
+
+### 4. 浏览器网页导入是 collect 的扩展，而不是替代整个系统
+
+插件与 bridge 的角色是：
+
+- 从网页端提取结构化数据
+- 导入 `data/raw/`
+- 继续复用现有 pipeline 下游阶段
+
+而不是绕开 pipeline 单独产出最终报告。
+
+---
+
+## 当前支持的数据入口
+
+当前 `collect` 阶段支持：
+
+- `fixture`
+- `codeforces`
+- `browser_bridge`
+
+### 1. fixture
+用于：
+
+- 本地演示
+- 回归测试
+- 结构验证
+
+### 2. codeforces
+用于：
+
+- 动态实时抓取 Codeforces 比赛与榜单数据
+- 支持通过 `handle` 或 `contest_ids` 驱动分析
+
+### 3. browser_bridge
+用于：
+
+- 从浏览器插件导入网页端提取的结构化数据
+- 适合与 Codeforces standings 页面联动
 
 ---
 
@@ -71,11 +118,13 @@
 
 ### Stage 1 — collect
 
-负责从外部来源获取原始数据，当前支持：
+负责从外部来源获取原始数据。
+
+当前支持：
 
 - fixture
-- Codeforces
-- browser bridge
+- Codeforces API
+- browser bridge 导入
 
 输出：
 
@@ -101,17 +150,25 @@
 
 - `data/intermediate/team_identity/<team>.json`
 
-### Stage 4 — compute_metrics
+### Stage 4 — build_history
+
+负责围绕目标队伍组装历史比赛记录。
+
+输出：
+
+- `data/intermediate/team_history/<team>.json`
+
+### Stage 5 — compute_metrics
 
 负责计算排名趋势、题型能力分布、稳定性、波动性、成长性等指标。
 
-这一层应尽量保持为确定性逻辑，不依赖 LLM。
+这一层尽量保持确定性逻辑，不依赖 LLM。
 
-建议输出：
+输出：
 
 - `data/derived/team_metrics/<team>.json`
 
-### Stage 5 — analyze
+### Stage 6 — analyze
 
 负责基于结构化指标生成高层分析结论，如优势、短板、训练建议、阶段性判断。
 
@@ -125,93 +182,184 @@
    - 可通过显式关闭 LLM 使用
    - 不依赖外部模型
 
-建议输出：
+输出：
 
 - `outputs/insights/<team>.json`
 
-### Stage 6 — report
+### Stage 7 — report
 
 负责把结构化结果和分析结论渲染为最终报告。
 
-建议输出：
+输出：
 
 - `outputs/reports/<team>.md`
 - `outputs/reports/<team>.html`
 
-### Stage 7 — visualize
+### Stage 8 — visualize
 
 负责生成图表数据与单页可视化结果。
 
-建议输出：
+输出：
 
 - `outputs/visualizations/<team>.json`
 - `outputs/visualizations/<team>.html`
 
-### Stage 8 — validate_final
+### Stage 9 — validate_final
 
 负责对最终产物做验收，检查报告完整性、图表可用性和关键字段缺失情况。
 
+输出：
+
+- `outputs/validation/<team>.json`
+
 ---
 
-## 使用方案
+## 推荐使用方式
 
-本项目的推荐使用方式，不是把它当作单一函数式工具，而是把它当作一条可执行的分析任务链。
+当前推荐使用顺序是：
 
-一个典型的使用过程可以理解为：
+1. **动态 CLI + 实时抓取 Codeforces**
+2. **browser bridge + 插件导入网页数据**
+3. `task-file` / `examples` 用于演示、回归、测试
 
-### 1. 指定分析任务
+---
 
-输入至少包括：
+## 方式一：直接实时抓取 Codeforces（推荐主用）
 
-- 目标队伍标识（队名、别名或平台 ID）
-- 比赛范围（平台、时间区间、赛事集合）
-- 可选分析参数（例如是否生成可视化、是否启用 AI 总结）
+这是当前**最稳定、最直接**的使用方式。
 
-### 2. 触发流水线运行
-
-由 Orchestrator 依次调度：
-
-1. 数据采集
-2. 数据归一化
-3. 队伍身份识别
-4. 历史记录构建
-5. 指标计算
-6. 分析生成
-7. 报告与可视化生成
-8. 最终验收
-
-当前最小运行命令为：
+### 示例
 
 ```bash
 python3 scripts/run_pipeline.py \
   --source codeforces \
   --target-team tourist \
   --codeforces-handle tourist \
-  --max-contests 3
+  --max-contests 5
 ```
 
-当前也支持：
+### 说明
 
-- task-file 模式
-- browser bridge 导入模式
-- browser bridge 导入并自动开始分析
+这条命令会自动执行：
+
+- `collect`
+- `normalize`
+- `team_identity`
+- `build_history`
+- `compute_metrics`
+- `analyze`
+- `report`
+- `visualize`
+- `validate_final`
+
+### 如果只想先抓取并检查数据
+
+```bash
+python3 scripts/run_pipeline.py \
+  --source codeforces \
+  --target-team tourist \
+  --codeforces-handle tourist \
+  --max-contests 3 \
+  --end-stage normalize \
+  --skip-analyze \
+  --skip-visualize
+```
+
+### 如果想指定具体比赛
+
+```bash
+python3 scripts/run_pipeline.py \
+  --source codeforces \
+  --target-team tourist \
+  --codeforces-handle tourist \
+  --contest-ids 1987 2118
+```
+
+---
+
+## 方式二：browser bridge + 插件链路
+
+当前插件链路已经可以试用，适合：
+
+- 在网页端快速导入 standings 数据
+- 交互式体验 browser bridge 工作流
+
+### 步骤 1：启动本地 bridge
+
+```bash
+python3 scripts/run_bridge.py
+```
+
+默认监听：
+
+- `http://127.0.0.1:8765`
+
+### 步骤 2：加载浏览器插件
+
+加载目录：
+
+```text
+plugins/browser-extension
+```
+
+### 步骤 3：打开 Codeforces standings 页面
+
+例如：
+
+```text
+https://codeforces.com/contest/1987/standings
+```
+
+### 步骤 4：在插件 popup 中填写
+
+- `target_team`
+- `aliases`
+
+### 步骤 5：点击“发送并开始分析”
+
+插件会自动：
+
+1. 尝试从页面上下文调用 Codeforces standings API
+2. 若失败则 fallback 到 DOM 提取
+3. 调用本地 bridge `import-and-run`
+4. bridge 自动导入 raw 数据并触发分析
+5. 返回：
+   - `run_id`
+   - `status`
+   - `report_path`
+   - `validation_path`
+
+### 详细说明
+
+插件完整使用说明见：
+
+- `docs/browser_bridge_usage.md`
+
+---
+
+## 方式三：task-file 模式
+
+当前仍保留 `task-file` 模式，适合：
+
+- 回归测试
+- 示例复现
+- 固定任务调试
 
 例如：
 
 ```bash
 python3 scripts/run_pipeline.py --task-file examples/codeforces_task.json
-python3 scripts/run_pipeline.py --source browser_bridge --target-team tourist --bridge-import-id <import_id> --start-stage normalize
-python3 scripts/run_bridge.py
 ```
 
-当前默认就会尝试 LLM analyze，因此直接运行即可：
+### 显式关闭 LLM
 
 ```bash
 python3 scripts/run_pipeline.py \
-  --task-file examples/sample_task.json
+  --task-file examples/sample_task.json \
+  --disable-llm-insight
 ```
 
-若希望指定模型或设置文件：
+### 指定模型或设置文件
 
 ```bash
 python3 scripts/run_pipeline.py \
@@ -220,19 +368,9 @@ python3 scripts/run_pipeline.py \
   --llm-settings-path ~/.claude/settings.json
 ```
 
-若希望显式关闭 LLM、改走本地规则模板：
+---
 
-```bash
-python3 scripts/run_pipeline.py \
-  --task-file examples/sample_task.json \
-  --disable-llm-insight
-```
-
-如果你要使用浏览器插件完整链路，建议同时阅读：
-
-- `docs/browser_bridge_usage.md`
-
-当前支持的主要参数包括：
+## 当前支持的主要参数
 
 - `--task-file`
 - `--source`
@@ -252,70 +390,75 @@ python3 scripts/run_pipeline.py \
 - `--skip-analyze`
 - `--skip-visualize`
 
-这意味着当前已经可以：
+---
 
-- 基于动态参数实时抓取 Codeforces 数据
-- 基于本地 fixture 跑完整链路
-- 基于 browser bridge 导入网页端提取数据
-- 通过 browser bridge 自动导入并启动分析
-- 默认优先使用 LLM analyze
-- 从某个阶段继续往后执行
-- 通过 artifact 检查各阶段中间结果
+## 输出结果在哪里
 
-### 3. 检查中间产物
+### 中间产物
 
-在任意阶段，使用者或开发者都可以查看落盘 artifact，例如：
+- `data/raw/`
+- `data/normalized/`
+- `data/intermediate/`
+- `data/derived/`
 
-- 原始 standings 是否正确
-- 队伍身份映射是否可信
-- 指标结果是否符合预期
-- 报告内容是否与 metrics 一致
+### 最终结果
 
-### 4. 局部修复与重跑
+- `outputs/insights/`
+- `outputs/reports/`
+- `outputs/visualizations/`
+- `outputs/validation/`
+- `outputs/bridge_runs/`
 
-如果某个阶段发现问题，推荐只修复对应阶段并局部重跑。例如：
+### hooks 运行输出
 
-- 抓取字段变化，只重跑 `collect` 和后续阶段
-- 队伍别名识别有误，只重跑 `team_identity` 及下游阶段
-- 报告模板更新，只重跑 `report` / `visualize` / `validate_final`
-
-因此，本项目的使用方案本质上也是开发方案的一部分：
-
-> 一切阶段都应设计成可单独验证、可局部重跑、可通过 artifact 追溯。
+- `.claude/hooks/outputs/run_logs/`
+- `.claude/hooks/outputs/stage_logs/`
+- `.claude/hooks/outputs/artifacts/`
+- `.claude/hooks/outputs/bridge/`
+- `.claude/hooks/outputs/validation/`
 
 ---
 
-## 建议输入与输出
+## `.claude` 相关能力
 
-### 输入
+当前仓库的 `.claude/` 已经不仅是规划目录，而是包含了两层能力：
 
-一个最小可用分析任务至少需要：
+### 1. Claude 命令型 hooks
 
-- 目标队伍标识（队名、别名或平台 ID）
-- 比赛范围（平台、时间区间、赛事集合）
-- 对应比赛的排名数据
-- 对应比赛的题目信息
+通过：
 
-### 输出
+- `.claude/settings.json`
 
-建议输出拆为两类：
+启用：
 
-- **结构化结果**：适合程序消费，例如 JSON / 中间分析结果
-- **展示型结果**：适合用户阅读，例如 Markdown / HTML / 图表报告
+- `UserPromptSubmit`
+- `PostToolUse`
 
-一份完整分析结果可以包含：
+当前会自动执行：
 
-- 队伍概览
-- 排名趋势图
-- 题型能力分布图
-- 强弱项总结
-- AI 结论与建议
+- `.claude/hooks/check-stage-output.py`
+- `.claude/hooks/check-artifact-layout.py`
+- `.claude/hooks/check-hooks-health.py`
+
+### 2. 运行期 hooks 系统
+
+通过：
+
+- `.claude/hooks/hooks.json`
+- `.claude/hooks/common/`
+- `.claude/hooks/builtin/`
+
+当前已覆盖：
+
+- pipeline run 生命周期
+- stage 生命周期
+- artifact 写入
+- bridge 导入 / 自动运行
+- report / visualize / validation 最终交付
 
 ---
 
-## 当前目录骨架与 Artifact Store
-
-当前仓库已经按 artifact store 与分层实现思路补齐了基础骨架，当前目录包括：
+## 当前目录骨架
 
 ```text
 acmer_analyze/
@@ -326,24 +469,17 @@ acmer_analyze/
 │   ├── project_structure.md
 │   ├── runtime_flow.md
 │   ├── stage_schema.md
+│   ├── browser_bridge_usage.md
 │   └── conventions/
 ├── scripts/
 ├── src/
-│   ├── orchestrator/
-│   ├── collector/
-│   ├── normalize/
-│   ├── identity/
-│   ├── models/
-│   ├── metrics/
-│   ├── analyzer/
-│   ├── report/
-│   ├── visualize/
-│   └── validation/
+├── plugins/
 ├── data/
 ├── outputs/
 ├── tests/
 ├── examples/
-└── config/
+├── config/
+└── .claude/
 ```
 
 ---
@@ -356,9 +492,12 @@ acmer_analyze/
 - pipeline 编排尽量简单直接
 - LLM 调用通过 HTTP 最小封装实现
 - 默认测试不会依赖真实外网调用
+- `.claude/settings.json` 已接入命令型 hooks，用于会话级状态检查与 hooks 健康检查
+- `.claude/hooks/` 已接入运行期 hooks，用于审计 pipeline / artifact / bridge / 最终交付生命周期
 
 因此，如果后续继续增强：
 
 - 建议优先保持 artifact 协议稳定
 - 再逐步增强 analyzer 的 prompt 与 provider 适配
+- 再持续打磨插件真实页面提取的鲁棒性
 - 避免把确定性计算逻辑重新塞回 LLM

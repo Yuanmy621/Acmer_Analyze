@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZJU Alpha · Analysis Bulletin</title>
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --panel: rgba(20, 24, 31, 0.72);
+      --panel-strong: rgba(22, 25, 33, 0.88);
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #f3efe5;
+      --muted: #b6b1a7;
+      --accent: #8ad7ff;
+      --accent-2: #f1b47c;
+      --danger: #ff8b8b;
+      --success: #7de1b8;
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --sans: "Avenir Next", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 15%, rgba(138, 215, 255, 0.18), transparent 32%),
+        radial-gradient(circle at 82% 12%, rgba(241, 180, 124, 0.12), transparent 30%),
+        linear-gradient(135deg, #050506 0%, #0c1017 48%, #09090a 100%);
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.86), rgba(0,0,0,0.2));
+      pointer-events: none;
+    }
+    .shell {
+      width: min(1280px, calc(100vw - 48px));
+      margin: 0 auto;
+      padding: 24px 0 72px;
+      position: relative;
+      z-index: 1;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .topbar .brand { letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); font-size: 12px; }
+    .topbar nav { display: flex; flex-wrap: wrap; gap: 10px; }
+    .topbar nav a {
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 12px;
+      transition: 180ms ease;
+    }
+    .topbar nav a:hover { color: var(--text); border-color: rgba(138,215,255,0.32); transform: translateY(-1px); }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      padding: 48px 44px 36px;
+      background: linear-gradient(160deg, rgba(17, 20, 27, 0.92), rgba(10, 12, 18, 0.78));
+      box-shadow: var(--shadow);
+      margin-bottom: 26px;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -12% -35% auto;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(138,215,255,0.24), transparent 62%);
+      pointer-events: none;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), transparent 34%);
+      pointer-events: none;
+    }
+    .kicker {
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-size: 12px;
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(42px, 6vw, 88px);
+      line-height: 0.9;
+      margin: 0 0 16px;
+      font-weight: 600;
+      max-width: 9ch;
+    }
+    .hero-summary {
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.8;
+      margin-bottom: 26px;
+    }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+    .hero-chip {
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 13px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), transparent 34%);
+      pointer-events: none;
+    }
+    .stats { grid-column: span 12; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .stat-card {
+      padding: 22px 20px;
+      border-radius: 22px;
+      background: var(--panel-strong);
+      border: 1px solid rgba(255,255,255,0.06);
+      min-height: 168px;
+      transition: 180ms ease;
+    }
+    .stat-card:hover { transform: translateY(-3px); border-color: rgba(138,215,255,0.24); }
+    .label { font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+    .value { font-family: var(--serif); font-size: clamp(34px, 4vw, 52px); line-height: 0.98; margin-bottom: 12px; }
+    .sub { color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .trend-panel { grid-column: span 7; }
+    .topic-panel { grid-column: span 5; }
+    .radar-panel { grid-column: span 5; }
+    .timeline-panel { grid-column: span 7; }
+    .insight-panel { grid-column: span 6; }
+    .matrix-panel { grid-column: span 12; }
+    .advice-panel { grid-column: span 12; }
+    .section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    .section-title h2 { margin: 0; font-family: var(--serif); font-size: 30px; font-weight: 600; }
+    .section-title span { color: var(--muted); font-size: 13px; }
+    .trend-chart, .radar-chart { width: 100%; height: auto; display: block; }
+    .trend-grid line, .radar-rings polygon, .radar-spokes line { stroke: rgba(255,255,255,0.08); stroke-dasharray: 3 9; fill: none; }
+    .trend-grid text { fill: rgba(255,255,255,0.44); font-size: 11px; }
+    .trend-line { fill: none; stroke: url(#trendStroke); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 18px rgba(138,215,255,0.24)); }
+    .trend-point circle { fill: #0d1117; stroke: var(--accent-2); stroke-width: 3; }
+    .trend-point text, .radar-label text { fill: rgba(243,239,229,0.86); font-size: 11px; }
+    .radar-shape { fill: url(#radarFill); stroke: var(--accent-2); stroke-width: 2.4; }
+    .radar-dots circle { fill: var(--accent); stroke: rgba(255,255,255,0.7); stroke-width: 1.5; }
+    .tag-row + .tag-row { margin-top: 16px; }
+    .tag-meta { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .tag-name { font-weight: 600; font-size: 15px; }
+    .tag-stats { color: var(--muted); font-size: 12px; }
+    .tag-track { width: 100%; height: 12px; border-radius: 999px; background: rgba(255,255,255,0.06); overflow: hidden; position: relative; }
+    .tag-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 0 24px rgba(138,215,255,0.24); }
+    .insight-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    .strength-card, .weakness-card { padding: 16px 18px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); line-height: 1.7; position: relative; }
+    .strength-card { background: linear-gradient(145deg, rgba(125,225,184,0.12), rgba(125,225,184,0.03)); }
+    .weakness-card { background: linear-gradient(145deg, rgba(255,139,139,0.12), rgba(255,139,139,0.03)); }
+    .timeline-stack { display: grid; gap: 14px; }
+    .timeline-card { display: grid; grid-template-columns: 72px 1fr; gap: 16px; align-items: stretch; }
+    .timeline-order {
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(138,215,255,0.16), rgba(138,215,255,0.04));
+      border: 1px solid rgba(138,215,255,0.18);
+      display: grid;
+      place-items: center;
+      font-family: var(--serif);
+      font-size: 28px;
+    }
+    .timeline-body { border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 16px 18px; background: rgba(255,255,255,0.03); }
+    .timeline-body h3 { margin: 0 0 8px; font-size: 17px; font-weight: 600; }
+    .timeline-body p { margin: 0; color: var(--muted); line-height: 1.8; }
+    .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .matrix-card { min-height: 200px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.08); background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); padding: 22px; }
+    .matrix-card strong { display: block; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 14px; }
+    .matrix-card h3 { margin: 0 0 12px; font-family: var(--serif); font-size: 28px; line-height: 1.1; }
+    .matrix-card p { margin: 0; color: var(--muted); line-height: 1.8; }
+    .advice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+    .advice-card { min-height: 170px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.08); background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); padding: 22px; }
+    .advice-card strong { display: block; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 12px; }
+    .advice-card p { margin: 0; color: var(--text); line-height: 1.8; }
+    .stage-box { margin-top: 18px; padding: 18px 20px; border-left: 2px solid var(--accent); background: rgba(255,255,255,0.035); color: var(--muted); line-height: 1.9; }
+    .footer-note { margin-top: 22px; color: rgba(255,255,255,0.56); font-size: 13px; line-height: 1.8; }
+    .empty-chart { color: var(--muted); padding: 16px 0; }
+    .reveal { opacity: 0; transform: translateY(22px); animation: reveal 680ms ease forwards; }
+    .delay-1 { animation-delay: 80ms; }
+    .delay-2 { animation-delay: 160ms; }
+    .delay-3 { animation-delay: 240ms; }
+    .delay-4 { animation-delay: 320ms; }
+    @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 980px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .trend-panel, .topic-panel, .radar-panel, .timeline-panel, .insight-panel, .matrix-panel, .advice-panel { grid-column: span 12; }
+      .advice-grid, .matrix-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .shell { width: min(100vw - 24px, 1280px); padding-top: 14px; }
+      .hero { padding: 30px 22px 24px; border-radius: 24px; }
+      .stats { grid-template-columns: 1fr; }
+      .panel { padding: 18px; border-radius: 20px; }
+      .timeline-card { grid-template-columns: 1fr; }
+      h1 { max-width: none; }
+      .topbar { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar reveal">
+      <div class="brand">Competitive Dossier / Single Page Analysis Site</div>
+      <nav>
+        <a href="#metrics">指标</a>
+        <a href="#trend">趋势</a>
+        <a href="#radar">雷达</a>
+        <a href="#timeline">时间轴</a>
+        <a href="#matrix">训练矩阵</a>
+      </nav>
+    </div>
+
+    <section class="hero reveal delay-1">
+      <div class="kicker">Competitive Team Analysis / HTML Bulletin</div>
+      <h1>ZJU Alpha</h1>
+      <div class="hero-summary">ZJU Alpha 在 2026-Q1 的样本比赛中参赛次数较少，但表现出一定上升趋势：两场记录中的名次从 12 提升到 8，且都有较早的首题通过。队伍当前已展示出在 implementation、graph 和 bitmasks 题目上的完成能力，但整体解题数量仍偏少，稳定性也有限。</div>
+      <div class="hero-meta">
+        <span class="hero-chip">canonical_id · team_zju_alpha</span>
+        <span class="hero-chip">model_used · gpt-5.4</span>
+        <span class="hero-chip">generated_at · 2026-06-02T04:17:53.174552+00:00</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="stats reveal delay-2" id="metrics">
+        <article class="stat-card">
+          <div class="label">Stability Score</div>
+          <div class="value">0.3333</div>
+          <div class="sub">用于表达多场比赛间发挥的一致性，越接近 1 越稳定。</div>
+        </article>
+        <article class="stat-card">
+          <div class="label">Growth Score</div>
+          <div class="value">1.0000</div>
+          <div class="sub">基于首尾比赛 percentile_rank 的粗粒度成长趋势估计。</div>
+        </article>
+        <article class="stat-card">
+          <div class="label">Avg First AC</div>
+          <div class="value">37.67<small style="font-size:18px;color:var(--muted);"> min</small></div>
+          <div class="sub">平均首过时间，可作为前中期进入状态速度的参考。</div>
+        </article>
+        <article class="stat-card">
+          <div class="label">Late Solve Ratio</div>
+          <div class="value">0.0000</div>
+          <div class="sub">后半程解题占比，反映拉锯战和中后程追分能力。</div>
+        </article>
+      </div>
+
+      <article class="panel trend-panel reveal delay-2" id="trend">
+        <div class="section-title">
+          <h2>排名走势</h2>
+          <span>Percentile & contest rank</span>
+        </div>
+        
+    <svg viewBox="0 0 760 280" class="trend-chart" role="img" aria-label="排名趋势图">
+      <defs>
+        <linearGradient id="trendStroke" x1="0%" x2="100%" y1="0%" y2="0%">
+          <stop offset="0%" stop-color="#8ad7ff"></stop>
+          <stop offset="100%" stop-color="#f1b47c"></stop>
+        </linearGradient>
+        <linearGradient id="trendArea" x1="0%" x2="0%" y1="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(138, 215, 255, 0.32)"></stop>
+          <stop offset="100%" stop-color="rgba(138, 215, 255, 0.02)"></stop>
+        </linearGradient>
+      </defs>
+      <g class="trend-grid"><line x1="56" y1="252.00" x2="704" y2="252.00"></line><text x="16" y="256.00">0.00</text><line x1="56" y1="196.00" x2="704" y2="196.00"></line><text x="16" y="200.00">0.25</text><line x1="56" y1="140.00" x2="704" y2="140.00"></line><text x="16" y="144.00">0.50</text><line x1="56" y1="84.00" x2="704" y2="84.00"></line><text x="16" y="88.00">0.75</text><line x1="56" y1="28.00" x2="704" y2="28.00"></line><text x="16" y="32.00">1.00</text></g>
+      <path d="M 56.00 252.00 L 56.00 849.34 L 704.00 550.66 L 704.00 252.00 Z" fill="url(#trendArea)"></path>
+      <path d="M 56.00 849.34 L 704.00 550.66" class="trend-line"></path>
+      
+            <g class="trend-point">
+              <circle cx="56.00" cy="849.34" r="6"></circle>
+              <text x="56.00" y="272.00" text-anchor="middle">cf_1987</text>
+              <text x="56.00" y="835.34" text-anchor="middle">#12</text>
+            </g>
+            
+            <g class="trend-point">
+              <circle cx="704.00" cy="550.66" r="6"></circle>
+              <text x="704.00" y="272.00" text-anchor="middle">ucup_2026_stage1</text>
+              <text x="704.00" y="536.66" text-anchor="middle">#8</text>
+            </g>
+            
+    </svg>
+    
+      </article>
+
+      <article class="panel topic-panel reveal delay-2">
+        <div class="section-title">
+          <h2>题型热区</h2>
+          <span>Attempt / solve distribution</span>
+        </div>
+        
+            <div class="tag-row">
+              <div class="tag-meta">
+                <span class="tag-name">bitmasks</span>
+                <span class="tag-stats">1/1 · 1.00</span>
+              </div>
+              <div class="tag-track"><span style="width:100.00%"></span></div>
+            </div>
+            
+            <div class="tag-row">
+              <div class="tag-meta">
+                <span class="tag-name">graph</span>
+                <span class="tag-stats">1/1 · 1.00</span>
+              </div>
+              <div class="tag-track"><span style="width:100.00%"></span></div>
+            </div>
+            
+            <div class="tag-row">
+              <div class="tag-meta">
+                <span class="tag-name">implementation</span>
+                <span class="tag-stats">1/1 · 1.00</span>
+              </div>
+              <div class="tag-track"><span style="width:100.00%"></span></div>
+            </div>
+            
+            <div class="tag-row">
+              <div class="tag-meta">
+                <span class="tag-name">trees</span>
+                <span class="tag-stats">0/1 · 0.00</span>
+              </div>
+              <div class="tag-track"><span style="width:8.00%"></span></div>
+            </div>
+            
+      </article>
+
+      <article class="panel radar-panel reveal delay-3" id="radar">
+        <div class="section-title">
+          <h2>能力雷达</h2>
+          <span>Shape of topic strengths</span>
+        </div>
+        
+    <svg viewBox="0 0 380 380" class="radar-chart" role="img" aria-label="能力雷达图">
+      <defs>
+        <linearGradient id="radarFill" x1="0%" x2="100%" y1="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(138, 215, 255, 0.42)"></stop>
+          <stop offset="100%" stop-color="rgba(241, 180, 124, 0.28)"></stop>
+        </linearGradient>
+      </defs>
+      <g class="radar-rings"><polygon points="190.00,158.50 219.96,180.27 208.52,215.48 171.48,215.48 160.04,180.27"></polygon><polygon points="190.00,127.00 249.92,170.53 227.03,240.97 152.97,240.97 130.08,170.53"></polygon><polygon points="190.00,95.50 279.87,160.80 245.55,266.45 134.45,266.45 100.13,160.80"></polygon><polygon points="190.00,64.00 309.83,151.06 264.06,291.94 115.94,291.94 70.17,151.06"></polygon></g>
+      <g class="radar-spokes"><line x1="190.00" y1="190.00" x2="190.00" y2="64.00"></line><line x1="190.00" y1="190.00" x2="309.83" y2="151.06"></line><line x1="190.00" y1="190.00" x2="264.06" y2="291.94"></line><line x1="190.00" y1="190.00" x2="115.94" y2="291.94"></line><line x1="190.00" y1="190.00" x2="70.17" y2="151.06"></line></g>
+      <polygon class="radar-shape" points="190.00,64.00 309.83,151.06 264.06,291.94 184.08,198.15 180.41,186.89"></polygon>
+      <g class="radar-dots"><circle cx="190.00" cy="64.00" r="4.5"></circle><circle cx="309.83" cy="151.06" r="4.5"></circle><circle cx="264.06" cy="291.94" r="4.5"></circle><circle cx="184.08" cy="198.15" r="4.5"></circle><circle cx="180.41" cy="186.89" r="4.5"></circle></g>
+      
+            <g class="radar-label">
+              <text x="190.00" y="38.80" text-anchor="middle">bitmasks</text>
+              <text x="190.00" y="54.80" text-anchor="middle">1 attempts</text>
+            </g>
+            
+            <g class="radar-label">
+              <text x="333.80" y="143.28" text-anchor="middle">graph</text>
+              <text x="333.80" y="159.28" text-anchor="middle">1 attempts</text>
+            </g>
+            
+            <g class="radar-label">
+              <text x="278.87" y="312.32" text-anchor="middle">implementation</text>
+              <text x="278.87" y="328.32" text-anchor="middle">1 attempts</text>
+            </g>
+            
+            <g class="radar-label">
+              <text x="101.13" y="312.32" text-anchor="middle">trees</text>
+              <text x="101.13" y="328.32" text-anchor="middle">1 attempts</text>
+            </g>
+            
+            <g class="radar-label">
+              <text x="46.20" y="143.28" text-anchor="middle">reserve 5</text>
+              <text x="46.20" y="159.28" text-anchor="middle">0 attempts</text>
+            </g>
+            
+    </svg>
+    
+      </article>
+
+      <article class="panel timeline-panel reveal delay-3" id="timeline">
+        <div class="section-title">
+          <h2>比赛时间轴</h2>
+          <span>Contest progression timeline</span>
+        </div>
+        <div class="timeline-stack">
+            <article class="timeline-card">
+              <div class="timeline-order">01</div>
+              <div class="timeline-body">
+                <h3>cf_1987</h3>
+                <p>Rank <strong>#12</strong> · Solved <strong>2</strong> · Percentile <strong>-2.6667</strong></p>
+              </div>
+            </article>
+            
+            <article class="timeline-card">
+              <div class="timeline-order">02</div>
+              <div class="timeline-body">
+                <h3>ucup_2026_stage1</h3>
+                <p>Rank <strong>#8</strong> · Solved <strong>1</strong> · Percentile <strong>-1.3333</strong></p>
+              </div>
+            </article>
+            </div>
+      </article>
+
+      <article class="panel insight-panel reveal delay-3">
+        <div class="section-title">
+          <h2>优势总结</h2>
+          <span>Strength signals</span>
+        </div>
+        <ul class="insight-list"><li class="strength-card">队伍在两场比赛中都能较早打开局面，已通过题目的平均首次通过时间为 37.67 分钟，说明基础题进入状态较快。</li><li class="strength-card">在已有样本中，implementation、graph 和 bitmasks 标签题目均有尝试且成功通过，相关方向表现较为直接有效。</li><li class="strength-card">从记录看名次由 12 提升到 8，growth_score 为 1.0，说明短期内存在一定积极变化。</li></ul>
+      </article>
+
+      <article class="panel insight-panel reveal delay-3">
+        <div class="section-title">
+          <h2>短板总结</h2>
+          <span>Pressure points</span>
+        </div>
+        <ul class="insight-list"><li class="weakness-card">总体解题数偏低，两场比赛分别只解出 2 题和 1 题，持续输出能力不足。</li><li class="weakness-card">稳定性分数仅为 0.3333，说明当前表现波动较大，样本中的可复现性不强。</li><li class="weakness-card">trees 标签题目有尝试但未通过，说明该方向至少在现有数据里是明显短板。</li><li class="weakness-card">后程解题能力不足，late_stage_solve_ratio 为 0.0，说明比赛后半段缺少继续拿题的记录。</li></ul>
+      </article>
+
+      <article class="panel matrix-panel reveal delay-4" id="matrix">
+        <div class="section-title">
+          <h2>训练重点矩阵</h2>
+          <span>Three-pillar action board</span>
+        </div>
+        <div class="matrix-grid"><div class="matrix-card"><strong>Pillar A</strong><h3>重建比赛节奏</h3><p>当前波动较明显，需要从开局拿分路径、队内协作节奏和赛时决策规则上先做底盘修复。</p></div><div class="matrix-card"><strong>Pillar B</strong><h3>趁势拔高上限</h3><p>近期趋势向上，建议在保持现有稳定得分点的同时，增加对中高难题的针对性突破。</p></div><div class="matrix-card"><strong>Pillar C</strong><h3>补足后半程火力</h3><p>建议围绕“总体解题数偏低，两场比赛分别只解出 2 题和 1 题，持续输出能力不足。”建立专项训练，并结合 90 分钟后的模拟赛段提升中后程得分能力。</p></div></div>
+      </article>
+
+      <article class="panel advice-panel reveal delay-4">
+        <div class="section-title">
+          <h2>训练建议</h2>
+          <span>Actionable recommendations</span>
+        </div>
+        <div class="advice-grid"><div class="advice-card"><strong>Advice 01</strong><p>优先补 trees 相关训练，并结合多次提交未通过的题目做针对性复盘，减少卡在单一专题上的情况。</p></div><div class="advice-card"><strong>Advice 02</strong><p>在保持前期快速拿基础题能力的同时，增加中后段题目的分层训练，提升比赛后半程继续得分的能力。</p></div><div class="advice-card"><strong>Advice 03</strong><p>围绕 implementation、graph、bitmasks 这些已成功过题的方向继续做同类扩展题，先把已有优势转化为更稳定的拿分点。</p></div><div class="advice-card"><strong>Advice 04</strong><p>由于当前比赛样本较少，建议通过更连续的队伍训练和模拟赛积累数据，重点提升整体稳定性。</p></div></div>
+        <div class="stage-box">从阶段表现看，ZJU Alpha 在本时间段内的成绩有小幅改善，后一次记录的名次好于前一次，但解题数反而从 2 题降到 1 题，说明当前进步更多体现在相对名次而不是稳定的题量提升上。结合稳定性较低、后程无新增通过以及专题覆盖仍有限的情况，队伍现阶段更像是具备快速起步能力，但尚未形成持续拿题节奏。</div>
+        <div class="footer-note">本单页分析站由 `report` 阶段直接生成，整合了结构化指标、能力轮廓、比赛时间轴与训练重点矩阵。这样既保留 artifact 可追溯性，也让结果更适合作为正式演示页面交付。</div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

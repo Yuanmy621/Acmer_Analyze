@@ -14,9 +14,39 @@ from src.orchestrator.context import PipelineContext
 from src.orchestrator.pipeline import run_pipeline
 from src.orchestrator.task import build_task_from_payload
 
+BRIDGE_BEFORE_IMPORT = "bridge.before_import"
+BRIDGE_AFTER_IMPORT = "bridge.after_import"
+BRIDGE_BEFORE_RUN = "bridge.before_run"
+BRIDGE_AFTER_RUN = "bridge.after_run"
+BRIDGE_ON_ERROR = "bridge.on_error"
+
+
+def _emit_bridge_hook(root_dir: Path, event_name: str, payload: dict[str, Any], *, error: str | None = None) -> None:
+    context = PipelineContext(root_dir=root_dir, task=build_task_from_payload({
+        "target_team": payload.get("target_team", "bridge_hook"),
+        "aliases": payload.get("aliases", []),
+        "source": "browser_bridge",
+        "generate_visualize": True,
+        "generate_insight": True,
+    }))
+    hook_manager = context.hook_manager()
+    hook_context = context.new_hook_context(event_name, payload=payload, error=error)
+    hook_manager.emit_safe(event_name, hook_context)
+
 
 def write_bridge_import(root_dir: Path, payload: BridgeImportPayload) -> dict[str, str]:
     """把浏览器侧抓取的原始 payload 写入仓库中的 raw artifacts。"""
+    _emit_bridge_hook(
+        root_dir,
+        BRIDGE_BEFORE_IMPORT,
+        {
+            "target_team": payload.target_team,
+            "aliases": payload.aliases,
+            "site": payload.site,
+            "collector": payload.metadata.get("collector"),
+        },
+    )
+
     import_id = f"bridge_{uuid4().hex[:12]}"
 
     write_json(root_dir / "data/raw/contests/contests.json", payload.raw_payload["contests"])
@@ -36,12 +66,24 @@ def write_bridge_import(root_dir: Path, payload: BridgeImportPayload) -> dict[st
     metadata_path = root_dir / "data/raw/bridge_imports" / f"{import_id}.json"
     write_json(metadata_path, metadata)
 
-    return {
+    result = {
         "import_id": import_id,
         "metadata_path": str(metadata_path.relative_to(root_dir)),
         # import-only 模式返回可复制执行的 CLI 命令，便于手工串联后续阶段。
         "next_command": f"python3 scripts/run_pipeline.py --source browser_bridge --target-team '{payload.target_team}' --start-stage normalize --bridge-import-id {import_id}",
     }
+    _emit_bridge_hook(
+        root_dir,
+        BRIDGE_AFTER_IMPORT,
+        {
+            "target_team": payload.target_team,
+            "aliases": payload.aliases,
+            "site": payload.site,
+            "collector": payload.metadata.get("collector"),
+            **result,
+        },
+    )
+    return result
 
 
 def _write_run_summary(root_dir: Path, summary: dict[str, Any]) -> str:
@@ -54,6 +96,18 @@ def _write_run_summary(root_dir: Path, summary: dict[str, Any]) -> str:
 def run_bridge_pipeline(root_dir: Path, payload_dict: dict[str, Any], start_stage: str = "normalize") -> dict[str, Any]:
     """执行 browser bridge 的 import-and-run 流程。"""
     validated = validate_bridge_payload(payload_dict)
+    _emit_bridge_hook(
+        root_dir,
+        BRIDGE_BEFORE_RUN,
+        {
+            "target_team": validated.target_team,
+            "aliases": validated.aliases,
+            "site": validated.site,
+            "collector": validated.metadata.get("collector"),
+            "start_stage": start_stage,
+        },
+    )
+
     import_result = write_bridge_import(root_dir, validated)
 
     run_id = f"run_{uuid4().hex[:12]}"
@@ -80,8 +134,8 @@ def run_bridge_pipeline(root_dir: Path, payload_dict: dict[str, Any], start_stag
             "status": "completed",
             "target_team": validated.target_team,
             "executed_stages": executed,
-            "report_path": f"outputs/reports/{context.canonical_id}.md",
-            "visualization_path": f"outputs/visualizations/{context.canonical_id}.json",
+            "report_path": f"outputs/reports/{context.canonical_id}.html",
+            "visualization_path": f"outputs/visualizations/{context.canonical_id}.html",
             "validation_path": f"outputs/validation/{context.canonical_id}.json",
             "started_at": started_at,
             "finished_at": finished_at,
@@ -105,6 +159,16 @@ def run_bridge_pipeline(root_dir: Path, payload_dict: dict[str, Any], start_stag
             "error": str(error),
             "error_type": "pipeline_validation_error",
         }
+        _emit_bridge_hook(
+            root_dir,
+            BRIDGE_ON_ERROR,
+            {
+                "target_team": validated.target_team,
+                "import_id": import_result["import_id"],
+                "run_id": run_id,
+            },
+            error=str(error),
+        )
     except Exception as error:  # noqa: BLE001
         finished_at = datetime.now(timezone.utc).isoformat()
         summary = {
@@ -121,8 +185,29 @@ def run_bridge_pipeline(root_dir: Path, payload_dict: dict[str, Any], start_stag
             "error": str(error),
             "error_type": "pipeline_runtime_error",
         }
+        _emit_bridge_hook(
+            root_dir,
+            BRIDGE_ON_ERROR,
+            {
+                "target_team": validated.target_team,
+                "import_id": import_result["import_id"],
+                "run_id": run_id,
+            },
+            error=str(error),
+        )
 
     summary_path = _write_run_summary(root_dir, summary)
+    _emit_bridge_hook(
+        root_dir,
+        BRIDGE_AFTER_RUN,
+        {
+            "target_team": validated.target_team,
+            "import_id": import_result["import_id"],
+            "run_id": run_id,
+            "status": summary["status"],
+            "summary_path": summary_path,
+        },
+    )
     return {
         "ok": summary["status"] == "completed",
         "import_id": import_result["import_id"],

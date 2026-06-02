@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "strict_events": [],
+  "bindings": {
+    "run.before_start": ["builtin.run_log"],
+    "run.after_finish": ["builtin.run_log"],
+    "run.on_error": ["builtin.run_log"],
+    "stage.before": ["builtin.stage_timing"],
+    "stage.after": ["builtin.stage_timing"],
+    "stage.error": ["builtin.stage_timing"],
+    "artifact.after_write": ["builtin.artifact_manifest"],
+    "bridge.after_import": ["builtin.bridge_audit"],
+    "bridge.after_run": ["builtin.bridge_audit"],
+    "report.after_generate": ["builtin.validation_summary"],
+    "visualize.after_generate": ["builtin.validation_summary"],
+    "validation.after_validate": ["builtin.validation_summary"]
+  }
+}

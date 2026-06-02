@@ -391,6 +391,17 @@ Stage 协议文档，主要描述：
 - 身份映射配置
 - 报告模板配置
 
+### `./.claude/`
+
+用于保存 Claude 协作相关配置、hooks、plans 与本地检查脚本。
+
+当前已包括：
+
+- `settings.json`：项目级 Claude hooks 配置
+- `settings.local.json`：本地权限与个性化补充
+- `hooks/`：运行期 hook 系统与命令型检查脚本
+- `plans/`：规划文件
+
 ---
 
 ## 11. 文件落点建议

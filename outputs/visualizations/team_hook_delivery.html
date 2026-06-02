@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hook Delivery · Visual Analysis Board</title>
+  <style>
+    :root {
+      --bg: #f5f0e7;
+      --paper: rgba(255,255,255,0.78);
+      --ink: #171311;
+      --muted: #6a625a;
+      --line: rgba(23,19,17,0.12);
+      --gold: #b88137;
+      --blue: #376d94;
+      --mint: #4f8471;
+      --rose: #b86b78;
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --sans: "Avenir Next", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", sans-serif;
+      --shadow: 0 28px 70px rgba(51, 39, 27, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        radial-gradient(circle at top left, rgba(184,129,55,0.10), transparent 26%),
+        radial-gradient(circle at bottom right, rgba(55,109,148,0.09), transparent 22%),
+        linear-gradient(180deg, #f8f4ed 0%, #f1ebe0 100%);
+    }
+    .board { width: min(1280px, calc(100vw - 40px)); margin: 0 auto; padding: 30px 0 44px; }
+    .masthead {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .sheet {
+      background: var(--paper);
+      border: 1px solid rgba(255,255,255,0.6);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .sheet::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(140deg, rgba(255,255,255,0.42), transparent 36%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.26em;
+      color: var(--blue);
+      margin-bottom: 16px;
+    }
+    h1 {
+      margin: 0 0 14px;
+      font-family: var(--serif);
+      font-size: clamp(38px, 5vw, 72px);
+      line-height: 0.95;
+      max-width: 8ch;
+      font-weight: 600;
+    }
+    .lede { color: var(--muted); line-height: 1.9; max-width: 60ch; }
+    .meta-stack { display: grid; gap: 12px; align-content: start; }
+    .meta-box { border: 1px solid var(--line); border-radius: 20px; padding: 18px 18px 16px; background: rgba(255,255,255,0.45); }
+    .meta-box span { display: block; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 10px; }
+    .meta-box strong { font-size: 20px; font-family: var(--serif); font-weight: 600; }
+    .layout { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; }
+    .stack { display: grid; gap: 18px; }
+    .section-title { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 18px; }
+    .section-title h2 { margin: 0; font-family: var(--serif); font-size: 26px; font-weight: 600; }
+    .section-title small { color: var(--muted); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; }
+    .viz-trend { width: 100%; height: auto; display: block; }
+    .viz-trend-path { fill: none; stroke: url(#vizTrendStroke); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+    .viz-trend circle { fill: white; stroke: var(--gold); stroke-width: 3; }
+    .viz-trend text { fill: rgba(23,19,17,0.74); font-size: 11px; }
+    .score-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .score-card { border: 1px solid var(--line); border-radius: 20px; padding: 18px; background: rgba(255,255,255,0.42); }
+    .score-card span { display: block; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 10px; }
+    .score-card strong { font-family: var(--serif); font-size: 34px; font-weight: 600; }
+    .score-card p { margin: 10px 0 0; color: var(--muted); line-height: 1.7; font-size: 13px; }
+    .metric-row + .metric-row { margin-top: 16px; }
+    .metric-row strong { display: block; font-size: 15px; margin-bottom: 3px; }
+    .metric-row span { color: var(--muted); font-size: 12px; }
+    .metric-bar { margin-top: 10px; width: 100%; height: 14px; border-radius: 999px; background: rgba(23,19,17,0.08); overflow: hidden; }
+    .metric-bar > span { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--gold), var(--blue)); transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+    .tag-cloud { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+    .strength-badge, .weakness-badge, .ghost { padding: 11px 15px; border-radius: 999px; border: 1px solid var(--line); font-size: 14px; }
+    .strength-badge { background: rgba(79,132,113,0.12); }
+    .weakness-badge { background: rgba(184,107,120,0.12); }
+    .ghost { color: var(--muted); background: rgba(255,255,255,0.3); }
+    .editorial-block { color: var(--muted); line-height: 1.9; font-size: 15px; }
+    .empty { color: var(--muted); padding: 16px 0; }
+    @media (max-width: 980px) {
+      .masthead, .layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .board { width: min(100vw - 20px, 1280px); padding-top: 12px; }
+      .sheet { padding: 18px; border-radius: 22px; }
+      .score-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="board">
+    <section class="masthead">
+      <article class="sheet">
+        <div class="eyebrow">Visual Analysis Board</div>
+        <h1>Hook Delivery</h1>
+        <p class="lede">测试摘要</p>
+      </article>
+      <aside class="meta-stack">
+        <div class="meta-box"><span>canonical_id</span><strong>team_hook_delivery</strong></div>
+        <div class="meta-box"><span>model_used</span><strong>rule-based-template</strong></div>
+        <div class="meta-box"><span>generated_at</span><strong>2026-06-02T00:00:00Z</strong></div>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <div class="stack">
+        <article class="sheet">
+          <div class="section-title"><h2>排名趋势图</h2><small>Rank / percentile</small></div>
+          
+    <svg class="viz-trend" viewBox="0 0 820 280" role="img" aria-label="排名趋势图">
+      <defs>
+        <linearGradient id="vizTrendStroke" x1="0%" x2="100%" y1="0%" y2="0%">
+          <stop offset="0%" stop-color="#f2d492"></stop>
+          <stop offset="100%" stop-color="#7cc6ff"></stop>
+        </linearGradient>
+      </defs>
+      <path class="viz-trend-path" d="M 56.00 30.00"></path>
+      <g><circle cx="56.00" cy="30.00" r="5"></circle><text x="56.00" y="16.00" text-anchor="middle">1</text></g>
+      <text x="56.00" y="272.00" text-anchor="middle">cf_1</text>
+    </svg>
+    
+        </article>
+        <article class="sheet">
+          <div class="section-title"><h2>题型能力分布</h2><small>Tag performance bars</small></div>
+          
+            <div class="metric-row">
+              <div>
+                <strong>implementation</strong>
+                <span>1/1 solved</span>
+              </div>
+              <div class="metric-bar"><span data-width="100.00"></span></div>
+            </div>
+            
+        </article>
+      </div>
+      <div class="stack">
+        <article class="sheet">
+          <div class="section-title"><h2>关键指标</h2><small>Core metrics</small></div>
+          <div class="score-grid">
+            <div class="score-card"><span>stability</span><strong>1.0000</strong><p>比赛表现越稳定，数值越接近 1。</p></div>
+            <div class="score-card"><span>growth</span><strong>1.0000</strong><p>首尾表现变化的粗粒度估计。</p></div>
+            <div class="score-card"><span>avg first ac</span><strong>2.00</strong><p>平均首过时间，单位分钟。</p></div>
+            <div class="score-card"><span>late solve ratio</span><strong>0.0000</strong><p>后半程解题占比，反映追分能力。</p></div>
+          </div>
+        </article>
+        <article class="sheet">
+          <div class="section-title"><h2>优势标签</h2><small>Strengths</small></div>
+          <ul class="tag-cloud"><li class="strength-badge">实现题稳定</li></ul>
+        </article>
+        <article class="sheet">
+          <div class="section-title"><h2>短板标签</h2><small>Weaknesses</small></div>
+          <ul class="tag-cloud"><li class="weakness-badge">样本较少</li></ul>
+        </article>
+        <article class="sheet">
+          <div class="section-title"><h2>阶段复盘</h2><small>Editorial note</small></div>
+          <div class="editorial-block">测试阶段分析</div>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script>
+    const payload = {"canonical_id": "team_hook_delivery", "rank_trend": [{"contest_id": "cf_1", "rank": 1, "percentile_rank": 1.0}], "tag_distribution": {"implementation": {"attempted": 1, "solved": 1, "solve_rate": 1.0}}, "strengths": ["实现题稳定"], "weaknesses": ["样本较少"]};
+    document.querySelectorAll('.metric-bar > span').forEach((node) => {
+      requestAnimationFrame(() => {
+        node.style.width = `${node.dataset.width || 0}%`;
+      });
+    });
+  </script>
+</body>
+</html>

@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from src.models.serde import read_json, write_json
 from src.orchestrator.context import PipelineContext
 
+VALIDATION_AFTER_VALIDATE = "validation.after_validate"
 
 REQUIRED_REPORT_SECTIONS = {"overview", "trend", "topics", "strengths", "weaknesses", "advice"}
 REQUIRED_CHART_KEYS = {"rank_trend", "tag_distribution", "strengths", "weaknesses"}
@@ -32,6 +33,10 @@ def run_validate_final(context: PipelineContext) -> None:
     if missing_sections:
         errors.append(f"missing report sections: {', '.join(missing_sections)}")
 
+    report_path = context.path(f"outputs/reports/{context.canonical_id}.html")
+    if not report_path.exists():
+        errors.append("report html not found")
+
     insight_path = context.path(f"outputs/insights/{context.canonical_id}.json")
     if insight_path.exists():
         insight = read_json(insight_path)
@@ -51,6 +56,10 @@ def run_validate_final(context: PipelineContext) -> None:
     else:
         warnings.append("visualization artifact not found")
 
+    visualization_html_path = context.path(f"outputs/visualizations/{context.canonical_id}.html")
+    if not visualization_html_path.exists():
+        errors.append("visualization html not found")
+
     payload = {
         "canonical_id": context.canonical_id,
         "passed": not errors,
@@ -58,4 +67,19 @@ def run_validate_final(context: PipelineContext) -> None:
         "warnings": warnings,
         "checked_at": datetime.now(timezone.utc).isoformat(),
     }
-    write_json(context.path(f"outputs/validation/{context.canonical_id}.json"), payload)
+    validation_path = context.path(f"outputs/validation/{context.canonical_id}.json")
+    write_json(validation_path, payload)
+
+    hook_manager = context.hook_manager()
+    hook_manager.emit_safe(
+        VALIDATION_AFTER_VALIDATE,
+        context.new_hook_context(
+            VALIDATION_AFTER_VALIDATE,
+            payload={
+                "validation_path": str(validation_path.relative_to(context.root_dir)),
+                "passed": payload["passed"],
+                "error_count": len(errors),
+                "warning_count": len(warnings),
+            },
+        ),
+    )

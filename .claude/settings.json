@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/check-artifact-layout.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/check-hooks-health.py"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/check-stage-output.py"
+          }
+        ]
+      }
+    ]
+  }
+}
