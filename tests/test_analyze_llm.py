@@ -80,34 +80,45 @@ class LlmAnalyzeTest(unittest.TestCase):
             self.assertEqual(payload["llm_provider"], "anthropic-compatible")
             self.assertIn("implementation", payload["strengths"][0])
 
-    def test_run_analyze_fallback_to_rule_on_llm_error(self) -> None:
+    def test_run_analyze_raises_on_llm_error(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root_dir = Path(temp_dir)
             context = self._prepare_context(root_dir, enable_llm_insight=True)
 
             with patch("src.analyzer.insight_generator.invoke_llm", side_effect=LlmConfigError("missing config")):
-                run_analyze(context)
+                with self.assertRaises(LlmConfigError):
+                    run_analyze(context)
 
-            payload = self._read_insight(root_dir)
-            self.assertEqual(payload["model_used"], "rule-based-template")
-            self.assertEqual(payload["fallback_reason"], "missing config")
-            self.assertTrue(any("回退到规则模板" in item for item in payload["training_advice"]))
-
-    def test_run_analyze_with_llm_disabled_uses_rule_based(self) -> None:
+    def test_run_analyze_uses_llm_even_when_legacy_disable_flag_is_false(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root_dir = Path(temp_dir)
             context = self._prepare_context(root_dir, enable_llm_insight=False)
 
-            run_analyze(context)
+            with patch("src.analyzer.insight_generator.invoke_llm") as invoke_mock:
+                invoke_mock.return_value = (
+                    json.dumps(
+                        {
+                            "summary": "队伍分析由 LLM 生成。",
+                            "strengths": ["基础题稳定", "配合节奏清晰"],
+                            "weaknesses": ["高难题突破不足", "后程追分空间较大"],
+                            "training_advice": ["保持专题训练", "加强赛后复盘"],
+                            "stage_analysis": "当前阶段适合继续通过结构化训练提高上限。",
+                        },
+                        ensure_ascii=False,
+                    ),
+                    type("Config", (), {"model": "gpt-test", "settings_path": "/tmp/settings.json"})(),
+                )
+
+                run_analyze(context)
 
             payload = self._read_insight(root_dir)
-            self.assertEqual(payload["model_used"], "rule-based-template")
-            self.assertNotIn("fallback_reason", payload)
+            self.assertEqual(payload["model_used"], "gpt-test")
+            invoke_mock.assert_called_once()
 
-    def test_run_analyze_raise_when_fallback_disabled(self) -> None:
+    def test_run_analyze_raises_even_when_legacy_fallback_flag_is_true(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root_dir = Path(temp_dir)
-            context = self._prepare_context(root_dir, enable_llm_insight=True, llm_fallback_to_rule=False)
+            context = self._prepare_context(root_dir, enable_llm_insight=True, llm_fallback_to_rule=True)
 
             with patch("src.analyzer.insight_generator.invoke_llm", side_effect=LlmConfigError("missing config")):
                 with self.assertRaises(LlmConfigError):

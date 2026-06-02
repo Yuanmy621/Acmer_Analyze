@@ -28,13 +28,14 @@ class PipelineSmokeTest(unittest.TestCase):
             str(ROOT_DIR / "scripts" / "run_pipeline.py"),
             "--task-file",
             str(ROOT_DIR / "examples" / "sample_task.json"),
-            "--disable-llm-insight",
+            "--skip-analyze",
         ]
         completed = self._run_with_retry(command)
         result = json.loads(completed.stdout)
 
         self.assertEqual(result["canonical_id"], "team_zju_alpha")
         self.assertIn("validate_final", result["executed_stages"])
+        self.assertNotIn("analyze", result["executed_stages"])
 
         report_path = ROOT_DIR / "outputs" / "reports" / "team_zju_alpha.md"
         report_html_path = ROOT_DIR / "outputs" / "reports" / "team_zju_alpha.html"

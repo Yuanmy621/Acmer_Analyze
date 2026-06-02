@@ -17,7 +17,7 @@ class PipelineHooksTest(unittest.TestCase):
             str(ROOT_DIR / "scripts" / "run_pipeline.py"),
             "--task-file",
             str(ROOT_DIR / "examples" / "sample_task.json"),
-            "--disable-llm-insight",
+            "--skip-analyze",
             "--skip-visualize",
         ]
         subprocess.run(command, cwd=ROOT_DIR, capture_output=True, text=True, check=True)

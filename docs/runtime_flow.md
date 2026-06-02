@@ -22,7 +22,7 @@
 
 - 上游阶段尽量产出稳定、结构化的 artifact
 - 下游阶段优先消费 artifact，而不是共享内存对象
-- `analyze` 默认优先走 LLM，失败时回退到 rule-based-template
+- `analyze` 仅走 LLM，失败时直接报错
 
 ---
 
@@ -127,10 +127,9 @@
 
 处理：
 
-- 组织优势、短板、阶段表现总结
-- 默认调用 LLM 做解释和归纳
-- 若 LLM 调用失败，默认回退到 `rule-based-template`
-- 若显式关闭 LLM，则直接走本地规则模板
+- 组织优势、短板、阶段表现总结的输入上下文
+- 调用 LLM 做解释和归纳
+- 若 LLM 配置缺失、调用失败或返回不可解析，则直接报错
 
 输出：
 
@@ -258,10 +257,9 @@ python3 scripts/run_pipeline.py \
 
 可选参数：
 
-- `--disable-llm-insight`
 - `--llm-model`
 - `--llm-settings-path`
-- `--disable-llm-fallback`
+- `--skip-analyze`：跳过整个 analyze 阶段，用于离线验证其它阶段
 
 配置读取优先级：
 
@@ -276,15 +274,7 @@ python3 scripts/run_pipeline.py \
 - `ANTHROPIC_MODEL`
 - 顶层 `model`
 
-如果 LLM 调用失败且允许 fallback，则仍会输出规则模板版 insight。
-
-如果明确不想走 LLM，可显式关闭：
-
-```bash
-python3 scripts/run_pipeline.py \
-  --task-file examples/sample_task.json \
-  --disable-llm-insight
-```
+如果 LLM 调用失败，analyze 阶段会直接报错，不会输出本地规则模板版 insight。
 
 ---
 
@@ -301,7 +291,6 @@ python3 scripts/run_pipeline.py \
 
 ```bash
 python3 scripts/run_pipeline.py --task-file examples/sample_task.json --start-stage analyze
-python3 scripts/run_pipeline.py --task-file examples/sample_task.json --start-stage analyze --disable-llm-insight
 ```
 
 ---

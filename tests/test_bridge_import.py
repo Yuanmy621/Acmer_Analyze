@@ -49,7 +49,7 @@ class BridgeImportTest(unittest.TestCase):
                 import_id,
                 '--start-stage',
                 'normalize',
-                '--disable-llm-insight',
+                '--skip-analyze',
             ]
             completed = subprocess.run(command, cwd=ROOT_DIR, capture_output=True, text=True, check=True)
             result = json.loads(completed.stdout)
@@ -57,6 +57,7 @@ class BridgeImportTest(unittest.TestCase):
             self.assertEqual(result['canonical_id'], 'team_tourist')
             self.assertIn('normalize', result['executed_stages'])
             self.assertIn('validate_final', result['executed_stages'])
+            self.assertNotIn('analyze', result['executed_stages'])
         finally:
             server.terminate()
             server.wait(timeout=5)
@@ -76,6 +77,7 @@ class BridgeImportTest(unittest.TestCase):
         try:
             time.sleep(0.8)
             payload = json.loads((ROOT_DIR / 'examples' / 'bridge_payload.json').read_text(encoding='utf-8'))
+            payload.setdefault('metadata', {})['skip_analyze'] = True
             request = Request(
                 'http://127.0.0.1:8765/api/bridge/import-and-run',
                 data=json.dumps(payload).encode('utf-8'),

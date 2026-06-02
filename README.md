@@ -21,9 +21,9 @@
 - `source=codeforces` 的真实抓取能力
 - `source=browser_bridge` 的导入与下游执行能力
 - report / visualize / validate 的最小实现
-- **analyze 阶段的双模式能力**
-  - 默认优先走 LLM analyze
-  - LLM 失败时回退 `rule-based-template`
+- **analyze 阶段的 LLM 分析能力**
+  - 仅通过 LLM analyze 生成高层洞察
+  - LLM 配置缺失或调用失败时直接报错
 - **分析结果清理工具**
   - 支持按队伍清理
   - 支持全量清理
@@ -119,15 +119,11 @@
 
 负责基于结构化指标生成高层分析结论，如优势、短板、训练建议、阶段性判断。
 
-当前支持两种模式：
+当前仅支持 **LLM analyze**：
 
-1. **LLM analyze**
-   - 默认模式
-   - 从环境变量或 `~/.claude/settings.json` 读取配置
-   - 调用失败时默认回退到 `rule-based-template`
-2. **rule-based-template**
-   - 可通过显式关闭 LLM 使用
-   - 不依赖外部模型
+- 从环境变量或 `~/.claude/settings.json` 读取配置
+- 基于 `TeamIdentity`、`TeamHistory`、`TeamMetrics` 组织 prompt
+- 调用失败时直接报错，不回退到本地规则模板
 
 输出：
 
@@ -269,15 +265,7 @@ python3 scripts/run_pipeline.py \
 python3 scripts/run_pipeline.py --task-file examples/sample_task.json
 ```
 
-当前默认就会尝试 LLM analyze。
-
-如需显式关闭：
-
-```bash
-python3 scripts/run_pipeline.py \
-  --task-file examples/sample_task.json \
-  --disable-llm-insight
-```
+当前会尝试 LLM analyze；如需离线验证其它阶段，可使用 `--skip-analyze` 跳过 analyze 阶段。
 
 ---
 
@@ -356,7 +344,6 @@ python3 scripts/clear_artifacts.py \
 
 ```bash
 python3 scripts/run_pipeline.py --task-file examples/sample_task.json --start-stage analyze
-python3 scripts/run_pipeline.py --task-file examples/sample_task.json --start-stage analyze --disable-llm-insight
 ```
 
 ---

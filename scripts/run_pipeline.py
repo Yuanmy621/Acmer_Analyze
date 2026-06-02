@@ -33,10 +33,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--bridge-payload-path", help="bridge 原始 payload 文件路径")
     parser.add_argument("--school", help="学校")
     parser.add_argument("--region", help="地区")
-    parser.add_argument("--disable-llm-insight", action="store_true", help="关闭默认的 LLM analyze，改走本地规则模板")
     parser.add_argument("--llm-model", help="覆盖默认 LLM model")
     parser.add_argument("--llm-settings-path", help="指定 LLM 设置文件路径")
-    parser.add_argument("--disable-llm-fallback", action="store_true", help="LLM 调用失败时不回退到规则模板")
     parser.add_argument("--start-stage", choices=STAGE_SEQUENCE, help="指定起始 stage")
     parser.add_argument("--end-stage", choices=STAGE_SEQUENCE, help="指定结束 stage")
     parser.add_argument("--skip-analyze", action="store_true", help="跳过 analyze 阶段")
@@ -72,10 +70,8 @@ def build_task_from_args(args: argparse.Namespace) -> AnalysisTask:
         bridge_payload_path=args.bridge_payload_path,
         generate_visualize=not args.skip_visualize,
         generate_insight=not args.skip_analyze,
-        enable_llm_insight=not args.disable_llm_insight,
         llm_model=args.llm_model,
         llm_settings_path=args.llm_settings_path,
-        llm_fallback_to_rule=not args.disable_llm_fallback,
         school=args.school,
         region=args.region,
     )

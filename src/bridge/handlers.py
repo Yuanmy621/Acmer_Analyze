@@ -126,7 +126,11 @@ def run_bridge_pipeline(root_dir: Path, payload_dict: dict[str, Any], start_stag
     try:
         task = build_task_from_payload(task_payload)
         context = PipelineContext(root_dir=root_dir, task=task)
-        executed = run_pipeline(context=context, start_stage=start_stage)
+        executed = run_pipeline(
+            context=context,
+            start_stage=start_stage,
+            skip_analyze=bool(validated.metadata.get("skip_analyze")),
+        )
         finished_at = datetime.now(timezone.utc).isoformat()
         summary = {
             "run_id": run_id,
