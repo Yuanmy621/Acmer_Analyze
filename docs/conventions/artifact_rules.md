@@ -30,6 +30,7 @@
 - `data/raw/contests/`
 - `data/raw/standings/`
 - `data/raw/problems/`
+- `data/raw/bridge_imports/`
 - `data/normalized/contests/`
 - `data/normalized/standings/`
 - `data/normalized/problems/`

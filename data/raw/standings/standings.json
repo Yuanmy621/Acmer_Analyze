@@ -1,0 +1,128 @@
+[
+  {
+    "contest_id": "cf_1987",
+    "team_raw_name": "ZJU Alpha",
+    "rank": 12,
+    "solved_count": 2,
+    "penalty": 210,
+    "problem_results": [
+      {
+        "problem_id": "cf_1987_A",
+        "accepted": true,
+        "attempts": 1,
+        "first_ac_time": 10
+      },
+      {
+        "problem_id": "cf_1987_B",
+        "accepted": true,
+        "attempts": 2,
+        "first_ac_time": 85
+      }
+    ]
+  },
+  {
+    "contest_id": "cf_1987",
+    "team_raw_name": "Beta Coders",
+    "rank": 25,
+    "solved_count": 1,
+    "penalty": 380,
+    "problem_results": [
+      {
+        "problem_id": "cf_1987_A",
+        "accepted": true,
+        "attempts": 2,
+        "first_ac_time": 32
+      },
+      {
+        "problem_id": "cf_1987_B",
+        "accepted": false,
+        "attempts": 4,
+        "first_ac_time": null
+      }
+    ]
+  },
+  {
+    "contest_id": "cf_1987",
+    "team_raw_name": "Gamma Team",
+    "rank": 40,
+    "solved_count": 1,
+    "penalty": 450,
+    "problem_results": [
+      {
+        "problem_id": "cf_1987_A",
+        "accepted": true,
+        "attempts": 3,
+        "first_ac_time": 55
+      },
+      {
+        "problem_id": "cf_1987_B",
+        "accepted": false,
+        "attempts": 2,
+        "first_ac_time": null
+      }
+    ]
+  },
+  {
+    "contest_id": "ucup_2026_stage1",
+    "team_raw_name": "zju_alpha",
+    "rank": 8,
+    "solved_count": 1,
+    "penalty": 260,
+    "problem_results": [
+      {
+        "problem_id": "ucup_2026_stage1_A",
+        "accepted": true,
+        "attempts": 1,
+        "first_ac_time": 18
+      },
+      {
+        "problem_id": "ucup_2026_stage1_B",
+        "accepted": false,
+        "attempts": 3,
+        "first_ac_time": null
+      }
+    ]
+  },
+  {
+    "contest_id": "ucup_2026_stage1",
+    "team_raw_name": "Omega Squad",
+    "rank": 15,
+    "solved_count": 1,
+    "penalty": 390,
+    "problem_results": [
+      {
+        "problem_id": "ucup_2026_stage1_A",
+        "accepted": true,
+        "attempts": 2,
+        "first_ac_time": 36
+      },
+      {
+        "problem_id": "ucup_2026_stage1_B",
+        "accepted": false,
+        "attempts": 4,
+        "first_ac_time": null
+      }
+    ]
+  },
+  {
+    "contest_id": "ucup_2026_stage1",
+    "team_raw_name": "Delta Force",
+    "rank": 23,
+    "solved_count": 0,
+    "penalty": 0,
+    "problem_results": [
+      {
+        "problem_id": "ucup_2026_stage1_A",
+        "accepted": false,
+        "attempts": 2,
+        "first_ac_time": null
+      },
+      {
+        "problem_id": "ucup_2026_stage1_B",
+        "accepted": false,
+        "attempts": 1,
+        "first_ac_time": null
+      }
+    ]
+  }
+]

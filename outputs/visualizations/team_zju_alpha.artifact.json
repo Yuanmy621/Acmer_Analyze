@@ -1,0 +1,12 @@
+{
+  "canonical_id": "team_zju_alpha",
+  "generated_at": "2026-06-02T02:06:10.902599+00:00",
+  "format": "json",
+  "path": "outputs/visualizations/team_zju_alpha.json",
+  "chart_keys": [
+    "rank_trend",
+    "tag_distribution",
+    "strengths",
+    "weaknesses"
+  ]
+}

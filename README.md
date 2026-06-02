@@ -1,236 +1,105 @@
-# ACM 队伍分析 Agent
+# acmer_analyze
 
 `acmer_analyze` 是一个面向 **ACM / 竞赛编程队伍分析** 的 Agent 项目。
 
-项目围绕 **竞赛数据采集 → 队伍历史归档 → 指标计算 → 分析解读 → 报告与可视化输出** 构建，目标是把“分析一支队伍的长期表现”做成一条 **可编排、可校验、可追溯、可局部重跑** 的工程化流水线。
+项目希望围绕某支目标队伍，基于比赛排名、题目信息与历史参赛记录，生成：
 
-它不是一个把比赛结果一次性丢给模型、直接生成点评的黑盒工具，而是一个强调 **阶段拆分、结构化中间产物、确定性指标计算、最终可交付分析结果** 的分析框架。
-
-当前仓库已经建立了：
-
-- 项目总览文档
-- 架构与协议文档
-- 分类规则文档
-- 面向后续实现的目录骨架
-
-后续开发将基于这套骨架逐步补齐实际代码与运行能力。
-
----
-
-## 项目定位
-
-本项目用于分析 ACM / 竞赛编程队伍在一段时间内的历史表现，并产出结构化、可解释、可展示的分析结果。
-
-围绕一支目标队伍，系统希望能够输出：
-
-- 排名变化趋势
-- 技能树 / 题型能力分布
+- 排名变化分析
+- 技能树 / 题型能力分析
 - 优势与短板总结
-- 阶段性表现复盘
 - 可视化分析报告
 
-当前文档中明确提到的竞赛数据源包括：
+---
 
+## 当前状态
+
+当前仓库已经具备：
+
+- 文档骨架与目录骨架
+- 基于 Python 标准库的最小可运行 pipeline
+- `source=fixture` 的本地联调能力
+- `source=codeforces` 的真实抓取能力
+- `source=browser_bridge` 的导入与下游执行能力
+- report / visualize / validate 的最小实现
+- **analyze 阶段的双模式能力**
+  - 默认优先走 LLM analyze
+  - LLM 失败时回退 `rule-based-template`
+
+当前仓库仍然不具备或不完整的能力包括：
+
+- UCUP 在线抓取能力
+- 更复杂的网页解析与多站点插件适配
+- 生产级 CI / lint / deploy 约定
+- 更成熟的 HTML 可视化交付
+
+---
+
+## 核心设计原则
+
+### 1. pipeline 优先，而不是单次 prompt
+
+项目不是希望做成“一次性把原始网页喂给模型然后直接出结论”的黑盒，而是希望按阶段拆开：
+
+1. collect
+2. normalize
+3. team_identity
+4. build_history
+5. compute_metrics
+6. analyze
+7. report
+8. visualize
+9. validate_final
+
+### 2. 确定性计算与自然语言解释分层
+
+- `compute_metrics` 负责确定性指标计算
+- `analyze` 负责高层解释、总结、建议
+- LLM 只应该增强解释层，不应替代底层数据清洗和指标统计
+
+### 3. artifact 可追溯
+
+每个阶段都应把中间结果落盘，便于：
+
+- 检查问题
+- 局部重跑
+- 回溯错误
+- 替换具体实现而不破坏整体结构
+
+---
+
+## Stage 概览
+
+### Stage 1 — collect
+
+负责从外部来源获取原始数据，当前支持：
+
+- fixture
 - Codeforces
-- UCUP
+- browser bridge
 
-随着后续开发推进，项目可以继续扩展到更多平台，但整体框架保持不变：
+输出：
 
-> 先采集数据，再标准化，再识别队伍，再计算指标，最后生成分析与交付结果。
+- `data/raw/contests/contests.json`
+- `data/raw/problems/problems.json`
+- `data/raw/standings/standings.json`
 
----
+### Stage 2 — normalize
 
-## 当前项目状态
+负责把不同 source 的原始结构转换为统一协议。
 
-当前仓库已经具备以下内容：
+输出：
 
-- `README.md`、`CLAUDE.md` 两个主入口文档
-- `docs/` 下的架构、协议、结构、运行流文档
-- `docs/conventions/` 下的分类规则骨架
-- `src/`、`scripts/`、`data/`、`outputs/`、`tests/`、`examples/`、`config/` 等目录骨架
-- 各主要模块与目录的职责说明文件
+- `data/normalized/contests/contests.json`
+- `data/normalized/problems/problems.json`
+- `data/normalized/standings/standings.json`
 
-当前仓库尚未具备的内容包括：
+### Stage 3 — team_identity
 
-- 实际可运行的数据采集、分析、报告生成代码
-- 固定的 build / lint / test / run 工作流
-- 已落地的 orchestrator 入口与阶段执行命令
+负责在标准化 standings 中识别目标队伍，并构造统一身份。
 
-因此，当前项目应理解为：
-
-> 已完成文档分层与结构骨架搭建，但尚处于实现前或实现早期阶段。
-
----
-
-## 为什么采用 harness / pipeline
-
-这个项目更适合做成多阶段流水线，而不是一次性生成，主要原因包括：
-
-1. **外部数据源不稳定**
-   - 比赛站点抓取方式可能变化
-   - 字段格式可能不统一
-   - 队伍名称映射可能存在歧义
-
-2. **分析过程依赖中间结果**
-   - 必须先有原始比赛与排名数据
-   - 再做归一化与身份识别
-   - 最后才能得到可信的趋势与能力分析
-
-3. **AI 更适合做解释，而不是吞掉全部逻辑**
-   - 排名变化、过题统计、标签聚合等应优先由程序确定性计算
-   - LLM 更适合在后续负责总结、解释和报告表达
-
-4. **最终结果需要验收**
-   - 输出不只是自然语言
-   - 还可能包括 JSON、图表数据、HTML 页面等交付物
-
-5. **需要支持局部重跑**
-   - 某个阶段出问题时，应只重跑相关阶段，而不是整条链全部重做
-
-因此，本项目推荐采用：
-
-**Orchestrator + Staged Pipeline + Validation + Artifact Store**
-
----
-
-## 核心设计思想
-
-### 1. Orchestrator 统一编排
-
-建议由一个统一入口负责调度整个流程，保证：
-
-- 各阶段执行顺序清晰
-- 输入输出路径一致
-- 支持从任意阶段开始重跑
-- 方便记录一次分析任务的上下文
-
-在这个项目里，Orchestrator 可以理解为：
-
-> “针对某个队伍、某个时间范围的一次分析任务运行器”。
-
-### 2. 每个阶段只做一件事
-
-推荐把采集、清洗、建模、指标计算、AI 解读、报表生成、可视化、验收拆开，避免出现：
-
-- 抓取逻辑和分析逻辑耦合
-- 统计逻辑和自然语言生成耦合
-- 报告层依赖未经验证的原始数据
-
-### 3. 中间结果必须落盘
-
-中间产物建议写入 `data/` 或 `outputs/`，这样可以：
-
-- 定位问题发生在哪个阶段
-- 检查原始数据是否可信
-- 对分析中间结果做人工复核
-- 支持局部重跑和回归验证
-
-### 4. 校验独立于生成
-
-生成阶段负责“产出”，校验阶段负责“验收”。
-
-例如：
-
-- 抓取阶段只负责拉数据
-- 归一化阶段只负责统一字段
-- 分析阶段只负责形成指标与结论
-- 最终校验阶段负责检查报告是否完整、图表是否可渲染、关键字段是否缺失
-
-这样可以避免“自己生成、自己证明自己没问题”的伪闭环。
-
----
-
-## 整体架构
-
-推荐把整个系统理解为一条分阶段的 harness：
-
-```text
-Contest Sources
-    ↓
-Stage 0  collect
-    ↓
-Stage 1  normalize
-    ↓
-Stage 2  team_identity
-    ↓
-Stage 3  build_history
-    ↓
-Stage 4  compute_metrics
-    ↓
-Stage 5  analyze
-    ↓
-Stage 6  report
-    ↓
-Stage 7  visualize
-    ↓
-Stage 8  validate_final
-```
-
-进一步看，这条链路可以抽象为三层：
-
-### 数据准备层
-
-- `collect`
-- `normalize`
-- `team_identity`
-- `build_history`
-
-职责是把外部比赛数据整理成可用于单队分析的标准化历史记录。
-
-### 分析推理层
-
-- `compute_metrics`
-- `analyze`
-
-职责是从队伍历史中提取趋势、能力画像、题型分布、稳定性与优劣势结论。
-
-### 交付展示层
-
-- `report`
-- `visualize`
-- `validate_final`
-
-职责是把分析结果输出成可阅读、可展示、可验收的最终产物。
-
----
-
-## 阶段说明
-
-### Stage 0 — collect
-
-负责拉取比赛、排名、题目信息，以及队伍原始参赛记录。
-
-建议输出：
-
-- `data/raw/contests/*.json`
-- `data/raw/standings/*.json`
-- `data/raw/problems/*.json`
-
-### Stage 1 — normalize
-
-负责统一时间格式、字段命名，并对不同平台的 standings / problem schema 做归一化。
-
-建议输出：
-
-- `data/normalized/contests/*.json`
-- `data/normalized/standings/*.json`
-- `data/normalized/problems/*.json`
-
-### Stage 2 — team_identity
-
-负责识别目标队伍在不同平台或不同比赛中的名称变体，建立统一身份映射。
-
-建议输出：
+输出：
 
 - `data/intermediate/team_identity/<team>.json`
-
-### Stage 3 — build_history
-
-负责为目标队伍汇总历次比赛记录，形成后续分析所需的统一历史视图。
-
-建议输出：
-
-- `data/intermediate/team_history/<team>.json`
 
 ### Stage 4 — compute_metrics
 
@@ -245,6 +114,16 @@ Stage 8  validate_final
 ### Stage 5 — analyze
 
 负责基于结构化指标生成高层分析结论，如优势、短板、训练建议、阶段性判断。
+
+当前支持两种模式：
+
+1. **LLM analyze**
+   - 默认模式
+   - 从环境变量或 `~/.claude/settings.json` 读取配置
+   - 调用失败时默认回退到 `rule-based-template`
+2. **rule-based-template**
+   - 可通过显式关闭 LLM 使用
+   - 不依赖外部模型
 
 建议输出：
 
@@ -300,6 +179,88 @@ Stage 8  validate_final
 6. 分析生成
 7. 报告与可视化生成
 8. 最终验收
+
+当前最小运行命令为：
+
+```bash
+python3 scripts/run_pipeline.py \
+  --source codeforces \
+  --target-team tourist \
+  --codeforces-handle tourist \
+  --max-contests 3
+```
+
+当前也支持：
+
+- task-file 模式
+- browser bridge 导入模式
+- browser bridge 导入并自动开始分析
+
+例如：
+
+```bash
+python3 scripts/run_pipeline.py --task-file examples/codeforces_task.json
+python3 scripts/run_pipeline.py --source browser_bridge --target-team tourist --bridge-import-id <import_id> --start-stage normalize
+python3 scripts/run_bridge.py
+```
+
+当前默认就会尝试 LLM analyze，因此直接运行即可：
+
+```bash
+python3 scripts/run_pipeline.py \
+  --task-file examples/sample_task.json
+```
+
+若希望指定模型或设置文件：
+
+```bash
+python3 scripts/run_pipeline.py \
+  --task-file examples/sample_task.json \
+  --llm-model gpt-5.4 \
+  --llm-settings-path ~/.claude/settings.json
+```
+
+若希望显式关闭 LLM、改走本地规则模板：
+
+```bash
+python3 scripts/run_pipeline.py \
+  --task-file examples/sample_task.json \
+  --disable-llm-insight
+```
+
+如果你要使用浏览器插件完整链路，建议同时阅读：
+
+- `docs/browser_bridge_usage.md`
+
+当前支持的主要参数包括：
+
+- `--task-file`
+- `--source`
+- `--target-team`
+- `--aliases`
+- `--codeforces-handle`
+- `--contest-ids`
+- `--max-contests`
+- `--bridge-import-id`
+- `--bridge-metadata-path`
+- `--disable-llm-insight`
+- `--llm-model`
+- `--llm-settings-path`
+- `--disable-llm-fallback`
+- `--start-stage`
+- `--end-stage`
+- `--skip-analyze`
+- `--skip-visualize`
+
+这意味着当前已经可以：
+
+- 基于动态参数实时抓取 Codeforces 数据
+- 基于本地 fixture 跑完整链路
+- 基于 browser bridge 导入网页端提取数据
+- 通过 browser bridge 自动导入并启动分析
+- 默认优先使用 LLM analyze
+- 从某个阶段继续往后执行
+- 通过 artifact 检查各阶段中间结果
 
 ### 3. 检查中间产物
 
@@ -379,128 +340,25 @@ acmer_analyze/
 │   ├── visualize/
 │   └── validation/
 ├── data/
-│   ├── raw/
-│   ├── normalized/
-│   ├── intermediate/
-│   └── derived/
 ├── outputs/
-│   ├── insights/
-│   ├── reports/
-│   ├── visualizations/
-│   └── validation/
 ├── tests/
-│   ├── fixtures/
-│   └── regression/
 ├── examples/
 └── config/
 ```
 
-这里最重要的不是目录名字本身，而是以下边界保持清晰：
-
-- 原始数据和衍生数据分开
-- 中间数据和最终输出分开
-- 指标计算和自然语言生成分开
-- 编排器和具体 stage 分开
-- 项目说明、架构说明、协议说明、规则说明分开
-
-更细的目录职责说明见：
-
-- `docs/project_structure.md`
-
 ---
 
-## Schema 文档
+## 当前实现约束
 
-为了让 harness 真正可编排、可重跑，建议优先固定 Stage 间的数据协议。
+当前实现依然保持“标准库优先”的最小风格：
 
-当前推荐的 schema 设计已整理在：
+- 主要使用 Python 标准库
+- pipeline 编排尽量简单直接
+- LLM 调用通过 HTTP 最小封装实现
+- 默认测试不会依赖真实外网调用
 
-- `docs/stage_schema.md`
+因此，如果后续继续增强：
 
-其中最关键的约束包括：
-
-- `canonical_id` 是 Stage 2 之后贯穿全流程的主键
-- `contest_id` / `problem_id` 是跨 artifact 的核心关联键
-- `team_raw_name` 必须在采集与归一化阶段保留下来，用于身份映射
-- 指标计算应优先依赖结构化字段，而不是依赖 LLM 从原始数据自由解释
-
-建议未来实现时，把 schema 视为 stage 之间的稳定协议；任何字段变更都应同步更新文档与代码模型。
-
-当前阶段可以先把 `docs/stage_schema.md` 视为后续代码模型与 artifact 组织的主参考文档。
-
----
-
-## 一个合理的端到端数据流
-
-基于当前已建立的文档与目录骨架，后续实现时可以按以下顺序组织：
-
-1. 拉取比赛与队伍原始数据
-2. 归一化 contest / standing / problem schema
-3. 识别并确认目标队伍身份
-4. 汇总目标队伍的历史参赛记录
-5. 计算趋势与题型能力指标
-6. 将指标送入 AI 分析或模板总结
-7. 生成最终可视化报告
-8. 对最终产物做验收校验
-
-这条数据流比“边爬边分析”更容易测试，也更方便复用中间结果。
-
-更细的运行顺序、artifact 流转方式与局部重跑说明见：
-
-- `docs/runtime_flow.md`
-
----
-
-## 文档演进方式
-
-这份 README 在项目中的定位，是一份持续演进的总览文档。
-
-当前仓库已经形成了“总览文档 + 架构文档 + 协议文档 + 规则文档 + 目录骨架说明”的基本分层。
-
-后续开发过程中，应不断补充和更新以下内容：
-
-- 新增的数据源范围
-- 更清晰的阶段职责边界
-- 实际落地后的目录与入口命令
-- 已确认的 artifact 路径规范
-- 已落地的报告格式与可视化方式
-- 验收策略与回归样本说明
-
-但 README 仍应尽量保持在：
-
-- 项目框架介绍
-- 系统架构说明
-- 使用方案总览
-- 文档导航说明
-
-更细粒度的信息建议拆分维护，例如：
-
-- schema 协议放在 `docs/stage_schema.md`
-- 目录结构说明放在 `docs/project_structure.md`
-- 运行流说明放在 `docs/runtime_flow.md`
-- 分类规则放在 `docs/conventions/`
-- 具体命令与运行方式放在后续实现文档中
-- 示例 artifact 放在 `docs/`、`examples/` 或测试样本目录中
-
-这样可以避免 README 同时承担概念说明和全部实现细节，最终变得过重且难以维护。
-
----
-
-## 相关文档
-
-- `docs/architecture.md`：系统架构、分层边界与阶段职责
-- `docs/project_structure.md`：仓库目录结构、模块职责与文件落点说明
-- `docs/runtime_flow.md`：一次分析任务的运行流、artifact 流转与局部重跑说明
-- `docs/stage_schema.md`：Stage 间输入输出协议与字段约束
-- `docs/conventions/README.md`：分类规则文档导航
-- `docs/conventions/naming.md`：命名规则（文档、目录、模块、字段、artifact）
-- `CLAUDE.md`：协作入口、全局约束摘要与文档调用路由
-
-如果你是第一次进入这个仓库，建议优先阅读顺序为：
-
-1. `README.md`
-2. `docs/architecture.md`
-3. `docs/project_structure.md`
-4. `docs/runtime_flow.md`
-5. `docs/stage_schema.md`
-6. `CLAUDE.md`
+- 建议优先保持 artifact 协议稳定
+- 再逐步增强 analyzer 的 prompt 与 provider 适配
+- 避免把确定性计算逻辑重新塞回 LLM

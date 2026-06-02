@@ -1,0 +1,13 @@
+{
+  "target_team": "ZJU Alpha",
+  "aliases": ["zju_alpha", "ZJU-Alpha"],
+  "source": "fixture",
+  "time_range": "2026-Q1",
+  "fixture_dir": "examples/sample_fixture",
+  "generate_visualize": true,
+  "generate_insight": true,
+  "enable_llm_insight": true,
+  "llm_fallback_to_rule": true,
+  "school": "Zhejiang University",
+  "region": "CN"
+}

@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "ACMer Analyze Bridge",
+  "version": "0.1.0",
+  "description": "将当前页面提取的数据发送到本地 acmer_analyze bridge",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "http://127.0.0.1:8765/*",
+    "https://codeforces.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://codeforces.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "target_team": "tourist",
+  "aliases": [],
+  "source": "codeforces",
+  "codeforces_handle": "tourist",
+  "max_contests": 2,
+  "contest_ids": [],
+  "include_gym": false,
+  "time_range": "recent-2",
+  "generate_visualize": true,
+  "generate_insight": true,
+  "region": "RU"
+}

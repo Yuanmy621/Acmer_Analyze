@@ -51,6 +51,7 @@ acmer_analyze/
 │   ├── collector/
 │   ├── normalize/
 │   ├── identity/
+│   ├── history/
 │   ├── models/
 │   ├── metrics/
 │   ├── analyzer/
@@ -167,6 +168,26 @@ Stage 协议文档，主要描述：
 - 外部平台数据采集
 - standings / contest / problem 抓取
 - 原始数据写入
+- 当前已落地：
+  - `fixture_collector.py`：本地 fixture 采集
+  - `codeforces_client.py`：Codeforces API 访问封装
+  - `codeforces_collector.py`：真实 Codeforces 数据抓取
+  - `bridge_collector.py`：browser bridge 导入结果校验与接入
+  - `dispatcher.py`：按 source 分派 collect 实现
+
+### `src/bridge/`
+
+负责：
+
+- 本地 HTTP bridge 服务
+- 浏览器插件导入 payload 校验
+- bridge 导入 metadata 落盘
+- bridge 触发 pipeline 执行
+- bridge 运行状态摘要输出
+- 当前已落地：
+  - `payloads.py`：bridge 协议校验
+  - `handlers.py`：raw artifact、metadata 与 bridge run summary 写入
+  - `server.py`：本地 HTTP 服务、导入与状态查询接口
 
 ### `src/normalize/`
 
@@ -209,6 +230,7 @@ Stage 协议文档，主要描述：
 - 基于 metrics 生成高层分析
 - AI 分析编排
 - 洞察结果组织
+- 当前已落地 `insight_generator.py`，用于规则式洞察生成
 
 ### `src/report/`
 
@@ -217,6 +239,7 @@ Stage 协议文档，主要描述：
 - Markdown / HTML 报告生成
 - section 渲染
 - 展示型文本组织
+- 当前已落地 `markdown_report.py`，用于生成 Markdown 报告与 report artifact
 
 ### `src/visualize/`
 
@@ -225,6 +248,7 @@ Stage 协议文档，主要描述：
 - 图表数据准备
 - 可视化结果渲染
 - 页面化输出
+- 当前已落地 `chart_data.py`，用于输出图表 JSON 与 visualization artifact
 
 ### `src/validation/`
 
@@ -233,6 +257,15 @@ Stage 协议文档，主要描述：
 - 最终产物验收
 - 完整性检查
 - 质量校验
+- 当前已落地 `validator.py`，用于输出 validation 结果
+
+### `src/history/`
+
+负责：
+
+- 目标队伍历史比赛记录组装
+- `TeamHistory` 构建
+- 当前已落地 `builder.py`，用于从 identity 与 standings 生成队伍历史
 
 ---
 
@@ -245,6 +278,14 @@ Stage 协议文档，主要描述：
 - 本地调试脚本
 - 数据修复脚本
 - 回归检查脚本
+
+当前已提供：
+
+- `scripts/run_pipeline.py`：最小可运行 orchestrator CLI，支持 task-file 与动态参数模式
+- `scripts/run_bridge.py`：本地 browser bridge HTTP 服务入口
+- `examples/sample_task.json`：本地 fixture 示例任务
+- `examples/codeforces_task.json`：真实 Codeforces 抓取示例任务
+- `examples/bridge_payload.json`：browser bridge 导入协议示例
 
 当前阶段可先保持轻量。
 

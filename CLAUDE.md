@@ -19,8 +19,8 @@
 
 当前明确提到的数据源包括：
 
-- `Codeforces`
-- `UCUP`
+- `Codeforces` `https://codeforces.com/`
+- `UCUP` `https://contest.ucup.ac/`
 
 项目整体应按照 **harness / pipeline** 思路设计，而不是做成一次性 prompt 驱动的黑盒工具。
 
@@ -37,13 +37,26 @@
 - `docs/conventions/` 下的分类规则骨架
 - `src/`、`scripts/`、`data/`、`outputs/`、`tests/`、`examples/`、`config/` 等目录骨架
 - 各主要模块与目录的职责说明文件
+- 一套基于 **Python 标准库** 的最小可运行流水线实现
+- `scripts/run_pipeline.py` 作为当前 orchestrator CLI 入口，支持 task-file 和动态参数模式
+- `scripts/run_bridge.py` 作为本地 browser bridge 服务入口
+- `examples/sample_task.json` 与 `examples/sample_fixture/` 作为本地 fixture 演示输入
+- `examples/codeforces_task.json` 作为真实 Codeforces 抓取示例任务
+- `examples/bridge_payload.json` 作为 browser bridge 导入协议示例
+- `source=codeforces` 的真实 collect 能力
+- `source=browser_bridge` 的 raw 导入与下游执行能力
+- bridge `import-and-run` 自动触发分析能力
+- `plugins/browser-extension/` 下的浏览器插件骨架与 Codeforces standings 页面首版提取逻辑
+- `python3 -m unittest discover -s tests -p 'test_*.py'` 作为当前基础测试命令
 
 现阶段尚未具备：
 
-- 完整的应用实现代码
-- 固定的 build / lint / test / run 工作流
-- 已落地的 orchestrator 运行入口
-- 可直接执行的 stage 命令
+- UCUP 在线抓取能力
+- 多站点成熟插件适配
+- 完整的 Codeforces 页面提取鲁棒性验证
+- LLM 驱动的分析生成能力
+- 完整的 build / lint / CI 工作流
+- 更完整的 artifact 版本化与生产级运行约定
 
 因此，在建议命令、技术方案或目录结构前，应先检查仓库是否已经新增：
 

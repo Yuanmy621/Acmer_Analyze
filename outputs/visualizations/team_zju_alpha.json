@@ -1,0 +1,48 @@
+{
+  "canonical_id": "team_zju_alpha",
+  "rank_trend": [
+    {
+      "contest_id": "cf_1987",
+      "rank": 12,
+      "percentile_rank": -2.6667
+    },
+    {
+      "contest_id": "ucup_2026_stage1",
+      "rank": 8,
+      "percentile_rank": -1.3333
+    }
+  ],
+  "tag_distribution": {
+    "bitmasks": {
+      "attempted": 1,
+      "solved": 1,
+      "solve_rate": 1.0
+    },
+    "graph": {
+      "attempted": 1,
+      "solved": 1,
+      "solve_rate": 1.0
+    },
+    "implementation": {
+      "attempted": 1,
+      "solved": 1,
+      "solve_rate": 1.0
+    },
+    "trees": {
+      "attempted": 1,
+      "solved": 0,
+      "solve_rate": 0.0
+    }
+  },
+  "strengths": [
+    "队伍在两场比赛中都能较早拿到首题，已通过题的首次 AC 时间分别为 10 分钟、18 分钟，平均首次 AC 时间为 37.67 分钟，说明开局进入状态较快。",
+    "在已有标签数据中，bitmasks、graph、implementation 三类题目均有尝试且全部解出，相关题型的当前解题转化率较好。",
+    "从 rank_trend 看，队伍名次由第 12 名提升到第 8 名，growth_score 为 1.0，近期表现呈现上升。"
+  ],
+  "weaknesses": [
+    "两场比赛的解题数分别只有 2 题和 1 题，整体解题产出偏低，说明中后段持续扩题能力不足。",
+    "stability_score 仅为 0.3333，说明不同比赛之间的发挥波动较明显，稳定输出能力有待加强。",
+    "trees 标签下有 1 次尝试但 0 次通过，当前在该方向上尚未形成有效得分。",
+    "late_stage_solve_ratio 为 0.0，说明后半程没有形成补题式或攻坚式得分，比赛后程效率不足。"
+  ]
+}

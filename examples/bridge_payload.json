@@ -1,0 +1,51 @@
+{
+  "source": "browser_bridge",
+  "site": "codeforces",
+  "target_team": "tourist",
+  "aliases": ["tourist"],
+  "raw_payload": {
+    "contests": [
+      {
+        "contest_id": "cf_1987",
+        "source": "codeforces",
+        "title": "Codeforces Round 1987",
+        "start_time": "2026-03-01T10:00:00Z",
+        "duration_seconds": 7200,
+        "type": "online",
+        "url": "https://codeforces.com/contest/1987"
+      }
+    ],
+    "problems": [
+      {
+        "problem_id": "cf_1987_A",
+        "contest_id": "cf_1987",
+        "label": "A",
+        "title": "Warmup Implementation",
+        "tags": [],
+        "difficulty": null
+      }
+    ],
+    "standings": [
+      {
+        "contest_id": "cf_1987",
+        "team_raw_name": "tourist",
+        "rank": 1,
+        "solved_count": 1,
+        "penalty": 0,
+        "problem_results": [
+          {
+            "problem_id": "cf_1987_A",
+            "accepted": true,
+            "attempts": 1,
+            "first_ac_time": 2
+          }
+        ]
+      }
+    ]
+  },
+  "metadata": {
+    "page_url": "https://codeforces.com/contest/1987/standings",
+    "captured_at": "2026-06-01T10:00:00Z",
+    "collector": "codeforces-standings-page"
+  }
+}

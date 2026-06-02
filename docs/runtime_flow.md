@@ -1,124 +1,83 @@
-# 运行流程说明
+# runtime_flow
 
 本文用于说明 `acmer_analyze` 一次分析任务从输入到输出的整体运行流程，以及中间 artifact 如何流转、如何局部重跑。
 
-如果 `docs/architecture.md` 回答的是“系统如何分层”，那么本文回答的是：
+---
 
-- 一次分析任务会经过哪些步骤
-- 每一步产出什么结果
-- 上下游之间如何衔接
-- 当某个阶段出问题时，应该如何重跑
+## 1. 总体运行顺序
+
+一次完整任务通常按以下顺序运行：
+
+1. `collect`
+2. `normalize`
+3. `team_identity`
+4. `build_history`
+5. `compute_metrics`
+6. `analyze`
+7. `report`
+8. `visualize`
+9. `validate_final`
+
+其中：
+
+- 上游阶段尽量产出稳定、结构化的 artifact
+- 下游阶段优先消费 artifact，而不是共享内存对象
+- `analyze` 默认优先走 LLM，失败时回退到 rule-based-template
 
 ---
 
-## 1. 一次分析任务的基本输入
-
-一个分析任务通常至少包含以下信息：
-
-- 目标队伍标识
-  - 队名
-  - 别名
-  - 平台 ID
-- 数据源范围
-  - Codeforces
-  - UCUP
-  - 后续更多平台
-- 时间范围或比赛集合
-- 可选运行参数
-  - 是否生成可视化
-  - 是否生成 AI 总结
-  - 是否跳过某些阶段
-
-这些输入由 Orchestrator 接收，并转化为一次可执行的分析任务。
-
----
-
-## 2. 标准执行路径
-
-推荐的一次完整执行路径如下：
-
-```text
-输入任务参数
-  ↓
-collect
-  ↓
-normalize
-  ↓
-team_identity
-  ↓
-build_history
-  ↓
-compute_metrics
-  ↓
-analyze
-  ↓
-report
-  ↓
-visualize
-  ↓
-validate_final
-  ↓
-最终交付结果
-```
-
-这条路径既是运行顺序，也是 artifact 逐步收敛的过程。
-
----
-
-## 3. 各阶段运行流
+## 2. 阶段运行说明
 
 ### 3.1 collect
 
 输入：
 
-- 目标队伍标识
-- 数据源
-- 时间范围
+- task 配置
+- 外部数据源或本地 fixture
 
 处理：
 
-- 获取比赛元数据
-- 获取 standings / ranking
-- 获取题目信息
-- 保留原始来源语义
+- 拉取原始比赛信息
+- 拉取题目信息
+- 拉取榜单信息
+- 写入 `data/raw/`
 
 输出：
 
-- `data/raw/contests/*.json`
-- `data/raw/standings/*.json`
-- `data/raw/problems/*.json`
+- `data/raw/contests/contests.json`
+- `data/raw/problems/problems.json`
+- `data/raw/standings/standings.json`
 
 ### 3.2 normalize
 
 输入：
 
-- 原始 contest / standing / problem 数据
+- `data/raw/*`
 
 处理：
 
-- 统一字段命名
-- 统一时间格式
-- 统一 schema
-- 做基础清洗
+- 对不同来源字段做统一命名
+- 收敛字段类型
+- 补齐后续阶段依赖的稳定字段
 
 输出：
 
-- `data/normalized/contests/*.json`
-- `data/normalized/standings/*.json`
-- `data/normalized/problems/*.json`
+- `data/normalized/contests/contests.json`
+- `data/normalized/problems/problems.json`
+- `data/normalized/standings/standings.json`
 
 ### 3.3 team_identity
 
 输入：
 
-- 标准化 standings
-- 用户给定目标队伍标识
+- `data/normalized/standings/standings.json`
+- task 中的 `target_team` 与 `aliases`
 
 处理：
 
-- 识别队伍别名
-- 建立平台 ID 映射
-- 确定统一 `canonical_id`
+- 匹配目标队伍在榜单中的原始名称
+- 生成统一 `canonical_id`
+- 记录平台 ID、学校、地区等元信息
 
 输出：
 
@@ -129,12 +88,13 @@ validate_final
 输入：
 
 - `TeamIdentity`
-- 标准化 contest / standing / problem 数据
+- `data/normalized/standings/standings.json`
 
 处理：
 
-- 汇总目标队伍历次比赛记录
-- 建立比赛级和题目级统一视图
+- 抽取目标队伍各场比赛记录
+- 计算每场比赛的 `percentile_rank`
+- 形成统一历史记录列表
 
 输出：
 
@@ -163,15 +123,24 @@ validate_final
 
 - `TeamMetrics`
 - 可选 `TeamHistory`
+- 可选 `TeamIdentity`
 
 处理：
 
 - 组织优势、短板、阶段表现总结
-- 根据需要调用 LLM 做解释和归纳
+- 默认调用 LLM 做解释和归纳
+- 若 LLM 调用失败，默认回退到 `rule-based-template`
+- 若显式关闭 LLM，则直接走本地规则模板
 
 输出：
 
 - `outputs/insights/<team>.json`
+
+说明：
+
+- `compute_metrics` 仍然保持确定性逻辑
+- LLM 只负责解释层表达
+- 产物中应保留 `model_used`
 
 ### 3.7 report
 
@@ -264,142 +233,81 @@ validate_final
 
 - 表达确定性分析结果
 
-### 交付层
+### 洞察与交付层
 
-- `outputs/`
+- `outputs/insights/`
+- `outputs/reports/`
+- `outputs/visualizations/`
+- `outputs/validation/`
 
 作用：
 
-- 表达洞察、报告、图表、验收结果
+- 表达高层分析结论
+- 承载最终报告与验收结果
 
 ---
 
-## 5. 局部重跑原则
+## 5. LLM analyze 的运行说明
 
-本项目不推荐每次都从头执行整条链路。
+当前 LLM analyze 默认启用，直接运行即可：
 
-当某个阶段出问题时，应优先判断能否从该阶段重跑。
+```bash
+python3 scripts/run_pipeline.py \
+  --task-file examples/sample_task.json
+```
 
-### 场景 1：抓取字段变化
+可选参数：
 
-影响：
+- `--disable-llm-insight`
+- `--llm-model`
+- `--llm-settings-path`
+- `--disable-llm-fallback`
 
-- `collect`
-- 下游所有阶段
+配置读取优先级：
 
-处理建议：
+1. CLI 显式参数
+2. 环境变量
+3. `~/.claude/settings.json`
 
-- 从 `collect` 重新开始
+支持读取的关键字段：
 
-### 场景 2：归一化规则调整
+- `ANTHROPIC_BASE_URL`
+- `ANTHROPIC_AUTH_TOKEN`
+- `ANTHROPIC_MODEL`
+- 顶层 `model`
 
-影响：
+如果 LLM 调用失败且允许 fallback，则仍会输出规则模板版 insight。
 
-- `normalize`
-- 下游所有阶段
+如果明确不想走 LLM，可显式关闭：
 
-处理建议：
-
-- 保留原始数据
-- 从 `normalize` 重新开始
-
-### 场景 3：身份映射修正
-
-影响：
-
-- `team_identity`
-- `build_history`
-- 下游分析与交付
-
-处理建议：
-
-- 从 `team_identity` 重新开始
-
-### 场景 4：指标计算逻辑调整
-
-影响：
-
-- `compute_metrics`
-- `analyze`
-- `report`
-- `visualize`
-- `validate_final`
-
-处理建议：
-
-- 从 `compute_metrics` 重新开始
-
-### 场景 5：报告模板调整
-
-影响：
-
-- `report`
-- 可能影响 `validate_final`
-
-处理建议：
-
-- 从 `report` 重新开始
-
-### 场景 6：可视化样式或图表规则调整
-
-影响：
-
-- `visualize`
-- `validate_final`
-
-处理建议：
-
-- 从 `visualize` 重新开始
-
-### 场景 7：验收规则调整
-
-影响：
-
-- `validate_final`
-
-处理建议：
-
-- 只重跑 `validate_final`
+```bash
+python3 scripts/run_pipeline.py \
+  --task-file examples/sample_task.json \
+  --disable-llm-insight
+```
 
 ---
 
-## 6. Orchestrator 在运行流中的角色
+## 6. 局部重跑建议
 
-Orchestrator 应至少负责：
+如果某个阶段发现问题，推荐只修复对应阶段并局部重跑。例如：
 
-- 接收任务参数
-- 确定运行起点
-- 组织阶段执行顺序
-- 读取与写入 artifact 路径
-- 记录每次运行状态
-- 处理失败后的重跑入口
+- 抓取字段变化，只重跑 `collect` 和后续阶段
+- 队伍别名识别有误，只重跑 `team_identity` 及下游阶段
+- 指标口径调整，只重跑 `compute_metrics` 及下游阶段
+- analyze prompt 更新，只重跑 `analyze` / `report` / `visualize` / `validate_final`
 
-它本身更偏向“运行控制器”，而不是承载具体业务逻辑。
+推荐命令示例：
 
----
-
-## 7. 后续实现建议
-
-当后续开始写代码时，建议优先实现以下能力：
-
-1. 可指定目标队伍与时间范围
-2. 可单独运行 `collect`
-3. 可单独运行 `normalize`
-4. 可从某个阶段继续往后执行
-5. 可把中间结果稳定落盘
-6. 可基于 artifact 进行简单回归检查
-
-这样更符合本项目“可编排、可重跑、可追溯”的定位。
+```bash
+python3 scripts/run_pipeline.py --task-file examples/sample_task.json --start-stage analyze
+python3 scripts/run_pipeline.py --task-file examples/sample_task.json --start-stage analyze --disable-llm-insight
+```
 
 ---
 
-## 8. 与其他文档的关系
+## 7. 设计提醒
 
-- `README.md`：说明项目是什么、怎么理解整体方案
-- `docs/architecture.md`：说明系统怎么分层
-- `docs/stage_schema.md`：说明每个阶段的数据协议
-- `docs/project_structure.md`：说明文件和目录如何组织
-
-本文则专门说明：
-
-> 一次分析任务实际上是如何流动起来的。
+- 尽量不要让 LLM 直接替代 `normalize` 或 `compute_metrics`
+- 高层总结应可替换，但底层协议应尽量稳定
+- 若后续适配多个 provider，优先扩展 analyzer 内部客户端，而不是污染其他 stage
