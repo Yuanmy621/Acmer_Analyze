@@ -84,7 +84,8 @@
   "label": "A",
   "title": "Sample Problem",
   "tags": ["implementation", "math"],
-  "difficulty": 900
+  "difficulty": 900,
+  "tutorial_content": "本题要求实现一个简单的模拟……"
 }
 ```
 
@@ -96,10 +97,12 @@
 - `title`：题目名，必须稳定
 - `tags`：题目标签，高优先级可选字段
 - `difficulty`：难度，可选
+- `tutorial_content`：官方题解文本，可选。来自 Codeforces Tutorial 页面，用于在 analyze 阶段提供解题思路上下文
 
 说明：
 
 - `tags` 虽然技术上可选，但对题型能力分析非常关键，应尽量补齐。
+- `tutorial_content` 在 collect 阶段从 Tutorial 页面抓取，通过 normalize 阶段注入到对应题目中。缺失时不影响主流程。
 
 ---
 
@@ -387,18 +390,21 @@
 - `Contest[]`
 - `Standing[]`
 - `Problem[]`
+- `Tutorial[]`（可选）
 
 建议落盘：
 
 - `data/raw/contests/*.json`
 - `data/raw/standings/*.json`
 - `data/raw/problems/*.json`
+- `data/raw/tutorials/*.json`（可选，抓取失败时不生成）
 
 关键要求：
 
 - 保留平台原始字段语义
 - 保留 `team_raw_name`
 - 不在本阶段做复杂映射
+- Tutorial 题解抓取为可选步骤，失败时静默跳过
 
 ---
 
@@ -409,12 +415,13 @@
 - Stage 0 的原始 `Contest[]`
 - Stage 0 的原始 `Standing[]`
 - Stage 0 的原始 `Problem[]`
+- Stage 0 的可选 `Tutorial[]`
 
 输出：
 
 - 标准化 `Contest[]`
 - 标准化 `Standing[]`
-- 标准化 `Problem[]`
+- 标准化 `Problem[]`（含 `tutorial_content`）
 
 建议落盘：
 
@@ -427,6 +434,7 @@
 - 统一字段命名与时间格式
 - 尽量补齐 `tags`
 - 不破坏 `contest_id`、`problem_id`、`team_raw_name`
+- 将 tutorials 数据中的题解内容关联到对应的 problem 中
 
 ---
 
@@ -508,6 +516,7 @@
 
 - `TeamMetrics`
 - 可选 `TeamHistory`
+- 可选 `Tutorial[]`（官方题解）
 
 输出：
 
@@ -522,6 +531,8 @@
 - 结论必须建立在结构化指标之上
 - 避免模型直接从原始排名自由生成结论
 - 建议保留 `model_used` 和 `generated_at`
+- 若存在 Tutorial 题解数据，应在 prompt 中提供给 LLM 以增强算法能力分析
+- Tutorial 数据缺失时不影响分析流程
 
 ---
 
@@ -639,6 +650,7 @@
 - `solve_pace`
 - `training_advice`
 - `stage_analysis`
+- `tutorial_content`
 
 ### 4.3 审计与溯源字段
 

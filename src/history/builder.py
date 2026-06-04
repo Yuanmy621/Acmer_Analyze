@@ -2,14 +2,18 @@ from __future__ import annotations
 
 """构建目标队伍历史参赛记录。"""
 
+import logging
 from collections import defaultdict
 
 from src.models.serde import read_json, write_json
 from src.orchestrator.context import PipelineContext
 
+logger = logging.getLogger(__name__)
+
 
 def run_build_history(context: PipelineContext) -> None:
     """从 normalized standings 中抽取目标队伍历史记录。"""
+    logger.info("[build_history] 开始构建队伍历史")
     identity = read_json(context.path(f"data/intermediate/team_identity/{context.canonical_id}.json"))
     standings = read_json(context.path("data/normalized/standings/standings.json"))
 
@@ -43,3 +47,4 @@ def run_build_history(context: PipelineContext) -> None:
         "contest_records": records,
     }
     write_json(context.path(f"data/intermediate/team_history/{context.canonical_id}.json"), payload)
+    logger.info("[build_history] 历史构建完成: %d 场比赛记录", len(records))

@@ -1,706 +1,128 @@
 [
   {
-    "contest_id": "cf_2207",
-    "team_raw_name": "Inkyo",
-    "rank": 105,
-    "solved_count": 6,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2196",
-    "team_raw_name": "Inkyo",
-    "rank": 69,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2187",
-    "team_raw_name": "Inkyo",
-    "rank": 165,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2190",
-    "team_raw_name": "Inkyo",
-    "rank": 825,
+    "contest_id": "cf_1987",
+    "team_raw_name": "ZJU Alpha",
+    "rank": 12,
     "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
+    "penalty": 210,
+    "problem_results": [
+      {
+        "problem_id": "cf_1987_A",
+        "accepted": true,
+        "attempts": 1,
+        "first_ac_time": 10
+      },
+      {
+        "problem_id": "cf_1987_B",
+        "accepted": true,
+        "attempts": 2,
+        "first_ac_time": 85
+      }
+    ]
   },
   {
-    "contest_id": "cf_2183",
-    "team_raw_name": "Inkyo",
-    "rank": 590,
-    "solved_count": 6,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2178",
-    "team_raw_name": "Inkyo",
-    "rank": 483,
-    "solved_count": 6,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2157",
-    "team_raw_name": "Inkyo",
-    "rank": 650,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2164",
-    "team_raw_name": "Inkyo",
-    "rank": 254,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2159",
-    "team_raw_name": "Inkyo",
-    "rank": 549,
-    "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2152",
-    "team_raw_name": "Inkyo",
-    "rank": 595,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2150",
-    "team_raw_name": "Inkyo",
-    "rank": 591,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2147",
-    "team_raw_name": "Inkyo",
-    "rank": 249,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2135",
-    "team_raw_name": "Inkyo",
-    "rank": 239,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2127",
-    "team_raw_name": "Inkyo",
-    "rank": 303,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2129",
-    "team_raw_name": "Inkyo",
-    "rank": 462,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2122",
-    "team_raw_name": "Inkyo",
-    "rank": 1040,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2115",
-    "team_raw_name": "Inkyo",
-    "rank": 383,
-    "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2096",
-    "team_raw_name": "Inkyo",
-    "rank": 731,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2086",
-    "team_raw_name": "Inkyo",
-    "rank": 82,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2092",
-    "team_raw_name": "Inkyo",
-    "rank": 799,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2089",
-    "team_raw_name": "Inkyo",
-    "rank": 483,
-    "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2075",
-    "team_raw_name": "Inkyo",
-    "rank": 142,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2077",
-    "team_raw_name": "Inkyo",
-    "rank": 856,
+    "contest_id": "cf_1987",
+    "team_raw_name": "Beta Coders",
+    "rank": 25,
     "solved_count": 1,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2070",
-    "team_raw_name": "Inkyo",
-    "rank": 27,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2069",
-    "team_raw_name": "Inkyo",
-    "rank": 152,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2066",
-    "team_raw_name": "Inkyo",
-    "rank": 847,
-    "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2059",
-    "team_raw_name": "Inkyo",
-    "rank": 69,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2063",
-    "team_raw_name": "Inkyo",
-    "rank": 4567,
-    "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2061",
-    "team_raw_name": "Inkyo",
-    "rank": 811,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2056",
-    "team_raw_name": "Inkyo",
-    "rank": 386,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2043",
-    "team_raw_name": "Inkyo",
-    "rank": 268,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2040",
-    "team_raw_name": "Inkyo",
-    "rank": 73,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2042",
-    "team_raw_name": "Inkyo",
-    "rank": 1731,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2039",
-    "team_raw_name": "Inkyo",
-    "rank": 1792,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2029",
-    "team_raw_name": "Inkyo",
-    "rank": 379,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2006",
-    "team_raw_name": "Inkyo",
-    "rank": 570,
-    "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_2002",
-    "team_raw_name": "Inkyo",
-    "rank": 541,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1998",
-    "team_raw_name": "Inkyo",
-    "rank": 181,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1993",
-    "team_raw_name": "Inkyo",
-    "rank": 599,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1997",
-    "team_raw_name": "Inkyo",
-    "rank": 576,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1991",
-    "team_raw_name": "Inkyo",
-    "rank": 1112,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1995",
-    "team_raw_name": "Inkyo",
-    "rank": 248,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1990",
-    "team_raw_name": "Inkyo",
-    "rank": 458,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1994",
-    "team_raw_name": "Inkyo",
-    "rank": 2607,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1988",
-    "team_raw_name": "Inkyo",
-    "rank": 143,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1983",
-    "team_raw_name": "Inkyo",
-    "rank": 976,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1989",
-    "team_raw_name": "Inkyo",
-    "rank": 682,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1982",
-    "team_raw_name": "Inkyo",
-    "rank": 286,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1984",
-    "team_raw_name": "Inkyo",
-    "rank": 2542,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1979",
-    "team_raw_name": "Inkyo",
-    "rank": 757,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1981",
-    "team_raw_name": "Inkyo",
-    "rank": 1066,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1976",
-    "team_raw_name": "Inkyo",
-    "rank": 924,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1969",
-    "team_raw_name": "Inkyo",
-    "rank": 348,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1957",
-    "team_raw_name": "Inkyo",
-    "rank": 289,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1956",
-    "team_raw_name": "Inkyo",
-    "rank": 238,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1954",
-    "team_raw_name": "Inkyo",
-    "rank": 581,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1951",
-    "team_raw_name": "Inkyo",
-    "rank": 836,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1942",
-    "team_raw_name": "Inkyo",
-    "rank": 1736,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1946",
-    "team_raw_name": "Inkyo",
-    "rank": 618,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1944",
-    "team_raw_name": "Inkyo",
-    "rank": 398,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1948",
-    "team_raw_name": "Inkyo",
-    "rank": 2342,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1935",
-    "team_raw_name": "Inkyo",
-    "rank": 635,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1934",
-    "team_raw_name": "Inkyo",
-    "rank": 542,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1937",
-    "team_raw_name": "Inkyo",
-    "rank": 693,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1923",
-    "team_raw_name": "Inkyo",
-    "rank": 976,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1930",
-    "team_raw_name": "Inkyo",
-    "rank": 1381,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1929",
-    "team_raw_name": "Inkyo",
-    "rank": 252,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1928",
-    "team_raw_name": "Inkyo",
-    "rank": 330,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1918",
-    "team_raw_name": "Inkyo",
-    "rank": 1086,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1925",
-    "team_raw_name": "Inkyo",
-    "rank": 458,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1922",
-    "team_raw_name": "Inkyo",
-    "rank": 2184,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1920",
-    "team_raw_name": "Inkyo",
-    "rank": 661,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1919",
-    "team_raw_name": "Inkyo",
-    "rank": 3748,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1916",
-    "team_raw_name": "Inkyo",
-    "rank": 4288,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1917",
-    "team_raw_name": "Inkyo",
-    "rank": 1846,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1913",
-    "team_raw_name": "Inkyo",
-    "rank": 692,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1902",
-    "team_raw_name": "Inkyo",
-    "rank": 1381,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1901",
-    "team_raw_name": "Inkyo",
-    "rank": 1114,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1898",
-    "team_raw_name": "Inkyo",
-    "rank": 858,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1894",
-    "team_raw_name": "Inkyo",
-    "rank": 3301,
-    "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1895",
-    "team_raw_name": "Inkyo",
-    "rank": 1998,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1891",
-    "team_raw_name": "Inkyo",
-    "rank": 4368,
-    "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1890",
-    "team_raw_name": "Inkyo",
-    "rank": 858,
-    "solved_count": 4,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1883",
-    "team_raw_name": "Inkyo",
-    "rank": 637,
-    "solved_count": 5,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1875",
-    "team_raw_name": "Inkyo",
-    "rank": 2029,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1878",
-    "team_raw_name": "Inkyo",
-    "rank": 3918,
-    "solved_count": 3,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1867",
-    "team_raw_name": "Inkyo",
-    "rank": 6270,
-    "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
-  },
-  {
-    "contest_id": "cf_1256",
-    "team_raw_name": "Inkyo",
-    "rank": 1907,
-    "solved_count": 2,
-    "penalty": 0,
-    "problem_results": []
+    "penalty": 380,
+    "problem_results": [
+      {
+        "problem_id": "cf_1987_A",
+        "accepted": true,
+        "attempts": 2,
+        "first_ac_time": 32
+      },
+      {
+        "problem_id": "cf_1987_B",
+        "accepted": false,
+        "attempts": 4,
+        "first_ac_time": null
+      }
+    ]
+  },
+  {
+    "contest_id": "cf_1987",
+    "team_raw_name": "Gamma Team",
+    "rank": 40,
+    "solved_count": 1,
+    "penalty": 450,
+    "problem_results": [
+      {
+        "problem_id": "cf_1987_A",
+        "accepted": true,
+        "attempts": 3,
+        "first_ac_time": 55
+      },
+      {
+        "problem_id": "cf_1987_B",
+        "accepted": false,
+        "attempts": 2,
+        "first_ac_time": null
+      }
+    ]
+  },
+  {
+    "contest_id": "ucup_2026_stage1",
+    "team_raw_name": "zju_alpha",
+    "rank": 8,
+    "solved_count": 1,
+    "penalty": 260,
+    "problem_results": [
+      {
+        "problem_id": "ucup_2026_stage1_A",
+        "accepted": true,
+        "attempts": 1,
+        "first_ac_time": 18
+      },
+      {
+        "problem_id": "ucup_2026_stage1_B",
+        "accepted": false,
+        "attempts": 3,
+        "first_ac_time": null
+      }
+    ]
+  },
+  {
+    "contest_id": "ucup_2026_stage1",
+    "team_raw_name": "Omega Squad",
+    "rank": 15,
+    "solved_count": 1,
+    "penalty": 390,
+    "problem_results": [
+      {
+        "problem_id": "ucup_2026_stage1_A",
+        "accepted": true,
+        "attempts": 2,
+        "first_ac_time": 36
+      },
+      {
+        "problem_id": "ucup_2026_stage1_B",
+        "accepted": false,
+        "attempts": 4,
+        "first_ac_time": null
+      }
+    ]
+  },
+  {
+    "contest_id": "ucup_2026_stage1",
+    "team_raw_name": "Delta Force",
+    "rank": 23,
+    "solved_count": 0,
+    "penalty": 0,
+    "problem_results": [
+      {
+        "problem_id": "ucup_2026_stage1_A",
+        "accepted": false,
+        "attempts": 2,
+        "first_ac_time": null
+      },
+      {
+        "problem_id": "ucup_2026_stage1_B",
+        "accepted": false,
+        "attempts": 1,
+        "first_ac_time": null
+      }
+    ]
   }
 ]

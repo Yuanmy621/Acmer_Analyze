@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sys
 from pathlib import Path
 
@@ -81,19 +82,42 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
 
+    # 配置日志：默认 INFO 级别，格式包含时间与 stage 信息。
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(message)s",
+        datefmt="%H:%M:%S",
+        stream=sys.stderr,
+    )
+
     if args.task_file:
         task = load_task(args.task_file)
     else:
-        task = build_task_from_args(args)
+        try:
+            task = build_task_from_args(args)
+        except ValueError as error:
+            print(f"错误: {error}", file=sys.stderr)
+            return 1
 
     context = PipelineContext(root_dir=ROOT_DIR, task=task)
-    executed = run_pipeline(
-        context=context,
-        start_stage=args.start_stage,
-        end_stage=args.end_stage,
-        skip_analyze=args.skip_analyze,
-        skip_visualize=args.skip_visualize,
-    )
+
+    print(f"开始分析队伍: {task.target_team} (canonical_id={context.canonical_id})", file=sys.stderr)
+
+    try:
+        executed = run_pipeline(
+            context=context,
+            start_stage=args.start_stage,
+            end_stage=args.end_stage,
+            skip_analyze=args.skip_analyze,
+            skip_visualize=args.skip_visualize,
+        )
+    except Exception as error:
+        print(f"\n流水线执行失败: {error}", file=sys.stderr)
+        return 1
+
+    print(f"\n分析完成！共执行 {len(executed)} 个阶段: {' → '.join(executed)}", file=sys.stderr)
+    print(f"报告路径: outputs/reports/{context.canonical_id}.md", file=sys.stderr)
+    print(f"可视化:   outputs/visualizations/{context.canonical_id}.html", file=sys.stderr)
 
     print(
         json.dumps(

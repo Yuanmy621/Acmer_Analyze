@@ -2,57 +2,15 @@ from __future__ import annotations
 
 """Codeforces 数据抓取与 raw artifact 组装逻辑。"""
 
+import logging
 from datetime import datetime, timezone
 
 from src.collector.codeforces_client import CodeforcesClient
+from src.collector.tutorial_fetcher import fetch_tutorials
 from src.models.serde import read_json, write_json
 from src.orchestrator.context import PipelineContext
 
-
-FALLBACK_CONTESTS = [
-    {
-        "contest_id": "cf_1987",
-        "source": "codeforces",
-        "title": "Codeforces Round 1987",
-        "start_time": "2026-03-01T10:00:00Z",
-        "duration_seconds": 7200,
-        "type": "online",
-        "url": "https://codeforces.com/contest/1987",
-    }
-]
-
-FALLBACK_PROBLEMS = [
-    {
-        "problem_id": "cf_1987_A",
-        "contest_id": "cf_1987",
-        "label": "A",
-        "title": "Warmup Implementation",
-        "tags": ["implementation"],
-        "difficulty": 900,
-    },
-    {
-        "problem_id": "cf_1987_B",
-        "contest_id": "cf_1987",
-        "label": "B",
-        "title": "Prefix Graph",
-        "tags": ["graph"],
-        "difficulty": 1500,
-    },
-]
-
-FALLBACK_STANDINGS = [
-    {
-        "contest_id": "cf_1987",
-        "team_raw_name": "tourist",
-        "rank": 1,
-        "solved_count": 2,
-        "penalty": 0,
-        "problem_results": [
-            {"problem_id": "cf_1987_A", "accepted": True, "attempts": 1, "first_ac_time": 2},
-            {"problem_id": "cf_1987_B", "accepted": True, "attempts": 1, "first_ac_time": 18},
-        ],
-    }
-]
+logger = logging.getLogger(__name__)
 
 
 def _to_iso8601(timestamp_seconds: int | None) -> str:
@@ -182,35 +140,70 @@ def _build_standings_payload(contest_id: int, problems: list[dict], rows: list[d
     return standings
 
 
-def _fallback_collect(context: PipelineContext) -> None:
-    """当外部网络短暂异常时，回退到本地稳定样本，保证主链路仍可验证。"""
-    write_json(context.path("data/raw/contests/contests.json"), FALLBACK_CONTESTS)
-    write_json(context.path("data/raw/problems/problems.json"), FALLBACK_PROBLEMS)
-    write_json(context.path("data/raw/standings/standings.json"), FALLBACK_STANDINGS)
+def _fetch_and_write_tutorials(
+    context: PipelineContext, client: CodeforcesClient, contest_ids: list[int]
+) -> int:
+    """抓取每场比赛的 Tutorial 题解并写入 raw artifact。
+
+    Tutorial 不是核心数据，抓取失败时静默跳过。返回成功抓取的题解数量。
+    """
+    tutorials: list[dict] = []
+    fetched_contests = 0
+    for cid in contest_ids:
+        tutorial_map = fetch_tutorials(client, cid)
+        if not tutorial_map:
+            continue
+        fetched_contests += 1
+        for label, content in tutorial_map.items():
+            tutorials.append(
+                {
+                    "problem_id": _build_problem_id(cid, label),
+                    "contest_id": _build_contest_id(cid),
+                    "label": label,
+                    "content": content,
+                }
+            )
+
+    if tutorials:
+        write_json(context.path("data/raw/tutorials/tutorials.json"), tutorials)
+        logger.info("抓取到 %d 场比赛的 Tutorial，共 %d 条题解", fetched_contests, len(tutorials))
+    else:
+        logger.info("未抓取到任何 Tutorial 题解")
+    return len(tutorials)
 
 
 def run_collect_codeforces(context: PipelineContext) -> None:
-    """抓取 Codeforces 数据并写入 raw artifacts。"""
+    """抓取 Codeforces 数据并写入 raw artifacts。
+
+    失败时直接抛出异常，不再静默回退到假数据。
+    """
     client = CodeforcesClient()
-    try:
-        contest_ids = _pick_contest_ids(context, client)
-        contest_list = client.get_contest_list(include_gym=context.task.include_gym)
-        contest_index = {int(item["id"]): item for item in contest_list}
+    handle = context.task.codeforces_handle or "(未指定)"
+    logger.info("[collect] 开始抓取 Codeforces 数据 (handle=%s)", handle)
 
-        contests: list[dict] = []
-        problems: list[dict] = []
-        standings: list[dict] = []
+    contest_ids = _pick_contest_ids(context, client)
+    logger.info("[collect] 将抓取 %d 场比赛: %s", len(contest_ids), contest_ids)
 
-        for contest_id in contest_ids:
-            standings_result = client.get_contest_standings(contest_id)
-            contest_snapshot = standings_result["contest"]
-            contest_meta = contest_index.get(contest_id, {})
-            contests.append(_build_contest_payload(contest_meta, contest_snapshot))
-            problems.extend(_build_problem_payload(contest_id, standings_result.get("problems", [])))
-            standings.extend(_build_standings_payload(contest_id, standings_result.get("problems", []), standings_result.get("rows", [])))
+    contest_list = client.get_contest_list(include_gym=context.task.include_gym)
+    contest_index = {int(item["id"]): item for item in contest_list}
 
-        write_json(context.path("data/raw/contests/contests.json"), contests)
-        write_json(context.path("data/raw/problems/problems.json"), problems)
-        write_json(context.path("data/raw/standings/standings.json"), standings)
-    except Exception:
-        _fallback_collect(context)
+    contests: list[dict] = []
+    problems: list[dict] = []
+    standings: list[dict] = []
+
+    for i, contest_id in enumerate(contest_ids, 1):
+        logger.info("[collect] 抓取比赛 %d/%d (contest_id=%d)", i, len(contest_ids), contest_id)
+        standings_result = client.get_contest_standings(contest_id)
+        contest_snapshot = standings_result["contest"]
+        contest_meta = contest_index.get(contest_id, {})
+        contests.append(_build_contest_payload(contest_meta, contest_snapshot))
+        problems.extend(_build_problem_payload(contest_id, standings_result.get("problems", [])))
+        standings.extend(_build_standings_payload(contest_id, standings_result.get("problems", []), standings_result.get("rows", [])))
+
+    write_json(context.path("data/raw/contests/contests.json"), contests)
+    write_json(context.path("data/raw/problems/problems.json"), problems)
+    write_json(context.path("data/raw/standings/standings.json"), standings)
+    logger.info("[collect] 数据写入完成: %d 场比赛, %d 道题目, %d 条排名", len(contests), len(problems), len(standings))
+
+    # 抓取每场比赛的 Tutorial 题解（可选，失败不影响主流程）。
+    _fetch_and_write_tutorials(context, client, contest_ids)

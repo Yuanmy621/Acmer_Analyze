@@ -2,6 +2,9 @@ from __future__ import annotations
 
 """主流水线调度器。"""
 
+import logging
+import time
+
 from src.analyzer.insight_generator import run_analyze
 from src.collector.dispatcher import run_collect
 from src.identity.resolver import run_team_identity
@@ -12,6 +15,8 @@ from src.report.markdown_report import run_report
 from src.visualize.chart_data import run_visualize
 from src.validation.validator import run_validate_final
 from src.history.builder import run_build_history
+
+logger = logging.getLogger(__name__)
 
 
 RUN_BEFORE_START = "run.before_start"
@@ -51,9 +56,15 @@ def run_pipeline(
             if not context.stage_enabled(stage_name, start_stage, end_stage):
                 continue
             if stage_name == "analyze" and skip_analyze:
+                logger.info("[pipeline] 跳过 stage: %s (--skip-analyze)", stage_name)
                 continue
             if stage_name == "visualize" and skip_visualize:
+                logger.info("[pipeline] 跳过 stage: %s (--skip-visualize)", stage_name)
                 continue
+
+            stage_index = len(executed) + 1
+            logger.info("[pipeline] ▶ stage %d/%d: %s", stage_index, len(STAGE_SEQUENCE), stage_name)
+            stage_start = time.monotonic()
 
             hook_manager.emit_safe(
                 STAGE_BEFORE,
@@ -83,12 +94,16 @@ def run_pipeline(
                 else:
                     raise ValueError(f"unknown stage: {stage_name}")
             except Exception as error:
+                elapsed = time.monotonic() - stage_start
+                logger.error("[pipeline] ✗ stage %s 失败 (%.1fs): %s", stage_name, elapsed, error)
                 hook_manager.emit_safe(
                     STAGE_ERROR,
                     context.new_hook_context(STAGE_ERROR, stage_name=stage_name, error=str(error)),
                 )
                 raise
 
+            elapsed = time.monotonic() - stage_start
+            logger.info("[pipeline] ✓ stage %s 完成 (%.1fs)", stage_name, elapsed)
             executed.append(stage_name)
             hook_manager.emit_safe(
                 STAGE_AFTER,

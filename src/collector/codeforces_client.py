@@ -68,3 +68,21 @@ class CodeforcesClient:
     def get_contest_standings(self, contest_id: int) -> dict[str, Any]:
         """获取指定比赛的榜单与题目快照。"""
         return self._request("contest.standings", {"contestId": contest_id})
+
+    def fetch_page(self, url: str) -> str | None:
+        """抓取指定 URL 的 HTML 内容，失败时返回 None。
+
+        用于获取 Tutorial 等非核心页面，失败不影响主流程。
+        """
+        request = Request(url, headers={"User-Agent": "acmer-analyze/0.1"})
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+
+        for _ in range(2):
+            try:
+                with urlopen(request, timeout=10, context=ssl_context) as response:
+                    return response.read().decode("utf-8", errors="replace")
+            except (HTTPError, URLError, OSError):
+                time.sleep(0.5)
+        return None
