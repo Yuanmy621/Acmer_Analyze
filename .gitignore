@@ -1,0 +1,34 @@
+# Python 缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python 虚拟环境
+.venv/
+venv/
+ENV/
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.bak
+
+# 项目运行时产生的数据（可重新生成）
+data/derived/
+data/intermediate/
+data/normalized/
+data/raw/bridge_imports/
+outputs/
+.claude/hooks/outputs/

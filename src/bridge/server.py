@@ -3,6 +3,7 @@ from __future__ import annotations
 """browser bridge 本地 HTTP 服务入口。"""
 
 import json
+import mimetypes
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -47,21 +48,59 @@ class BridgeRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self) -> None:  # noqa: N802
-        """查询指定 run_id 的执行摘要。"""
+        """查询指定 run_id 的执行摘要，或提供静态文件服务。"""
+        # API 端点：查询 run 摘要
         prefix = "/api/bridge/runs/"
-        if not self.path.startswith(prefix):
-            self._json_response(HTTPStatus.NOT_FOUND, _error_payload("not found", "route_not_found"))
+        if self.path.startswith(prefix):
+            run_id = self.path[len(prefix):]
+            try:
+                summary = read_run_summary(self.root_dir, run_id)
+            except FileNotFoundError:
+                self._json_response(
+                    HTTPStatus.NOT_FOUND,
+                    _error_payload("run summary not found", "run_not_found", {"run_id": run_id}),
+                )
+                return
+            self._json_response(HTTPStatus.OK, {"ok": True, **summary})
             return
-        run_id = self.path[len(prefix):]
-        try:
-            summary = read_run_summary(self.root_dir, run_id)
-        except FileNotFoundError:
-            self._json_response(
-                HTTPStatus.NOT_FOUND,
-                _error_payload("run summary not found", "run_not_found", {"run_id": run_id}),
-            )
+
+        # 静态文件服务：outputs 目录下的文件
+        if self.path.startswith("/outputs/"):
+            file_path = self.root_dir / self.path.lstrip("/")
+            if not file_path.exists() or not file_path.is_file():
+                self._json_response(HTTPStatus.NOT_FOUND, _error_payload("file not found", "file_not_found"))
+                return
+
+            # 安全检查：只允许访问 outputs 目录
+            try:
+                file_path.resolve().relative_to((self.root_dir / "outputs").resolve())
+            except ValueError:
+                self._json_response(HTTPStatus.FORBIDDEN, _error_payload("access denied", "access_denied"))
+                return
+
+            # 提供文件下载
+            content_type, _ = mimetypes.guess_type(str(file_path))
+            if content_type is None:
+                content_type = "application/octet-stream"
+
+            try:
+                with open(file_path, "rb") as f:
+                    content = f.read()
+                self.send_response(HTTPStatus.OK)
+                self.send_header("Content-Type", content_type)
+                self.send_header("Content-Length", str(len(content)))
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(content)
+            except Exception:
+                self._json_response(
+                    HTTPStatus.INTERNAL_SERVER_ERROR,
+                    _error_payload("failed to read file", "file_read_error"),
+                )
             return
-        self._json_response(HTTPStatus.OK, {"ok": True, **summary})
+
+        # 未知路径
+        self._json_response(HTTPStatus.NOT_FOUND, _error_payload("not found", "route_not_found"))
 
     def do_POST(self) -> None:  # noqa: N802
         """处理 import 与 import-and-run 两类 bridge 请求。"""

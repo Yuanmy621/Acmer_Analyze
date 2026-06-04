@@ -4,20 +4,34 @@ const targetTeamEl = document.getElementById('target-team');
 const aliasesEl = document.getElementById('aliases');
 const resultSummaryEl = document.getElementById('result-summary');
 
+const BRIDGE_BASE_URL = 'http://127.0.0.1:8765';
+
 function setStatus(message) {
   statusEl.textContent = message;
+}
+
+function buildFileUrl(relativePath) {
+  if (!relativePath || relativePath === '-') return null;
+  return `${BRIDGE_BASE_URL}/${relativePath}`;
 }
 
 function renderSummary(data) {
   const status = data?.status || 'unknown';
   const runId = data?.run_id || '-';
   const reportPath = data?.report_path || '-';
+  const visualizationPath = data?.visualization_path || '-';
   const validationPath = data?.validation_path || '-';
+
+  const reportUrl = buildFileUrl(reportPath);
+  const visualizationUrl = buildFileUrl(visualizationPath);
+  const validationUrl = buildFileUrl(validationPath);
+
   resultSummaryEl.innerHTML = `
     <div>状态：<code>${status}</code></div>
     <div>run_id：<code>${runId}</code></div>
-    <div>report：<code>${reportPath}</code></div>
-    <div>validation：<code>${validationPath}</code></div>
+    ${reportUrl ? `<div>📊 <a href="${reportUrl}" target="_blank">查看分析报告</a></div>` : `<div>报告：-</div>`}
+    ${visualizationUrl ? `<div>📈 <a href="${visualizationUrl}" target="_blank">查看可视化图表</a></div>` : `<div>可视化：-</div>`}
+    ${validationUrl ? `<div>✅ <a href="${validationUrl}" target="_blank">查看验证结果</a></div>` : `<div>验证：-</div>`}
   `;
 }
 
@@ -77,7 +91,7 @@ buttonEl.addEventListener('click', async () => {
           setStatus(`bridge 执行失败: ${buildErrorMessage(data)}`);
           return;
         }
-        setStatus(JSON.stringify(data, null, 2));
+        setStatus('✅ 分析完成！请点击上方链接查看报告。');
       },
     );
   });

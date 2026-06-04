@@ -46,8 +46,39 @@ def _build_llm_prompt(context: PipelineContext, identity: dict, history: dict, m
 
 
 def _parse_llm_response(raw_text: str) -> dict[str, Any]:
-    """解析模型返回的 JSON，并校验必要字段。"""
-    payload = json.loads(raw_text)
+    """解析模型返回的 JSON，并校验必要字段。
+
+    支持处理：
+    - 纯 JSON 文本
+    - 带 Markdown 代码块的 JSON（如 ```json ... ```）
+    - 带前后缀说明文字的 JSON
+    """
+    text = raw_text.strip()
+
+    # 尝试提取 Markdown 代码块中的 JSON
+    if "```json" in text:
+        start = text.find("```json") + 7
+        end = text.find("```", start)
+        if end != -1:
+            text = text[start:end].strip()
+    elif "```" in text:
+        start = text.find("```") + 3
+        end = text.find("```", start)
+        if end != -1:
+            text = text[start:end].strip()
+
+    # 如果文本不是以 { 开头，尝试找到第一个 { 和最后一个 }
+    if not text.startswith("{"):
+        first_brace = text.find("{")
+        last_brace = text.rfind("}")
+        if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
+            text = text[first_brace:last_brace + 1]
+
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError as error:
+        raise LlmRequestError(f"failed to parse llm response as JSON: {error}") from error
+
     required_fields = ["summary", "strengths", "weaknesses", "training_advice", "stage_analysis"]
     missing = [field for field in required_fields if field not in payload]
     if missing:
