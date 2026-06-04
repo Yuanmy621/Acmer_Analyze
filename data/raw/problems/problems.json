@@ -1,64 +1,584 @@
 [
   {
-    "problem_id": "cf_2207_A",
-    "contest_id": "cf_2207",
-    "label": "A",
-    "title": "1-1",
+    "problem_id": "cf_2229_E",
+    "contest_id": "cf_2229",
+    "label": "E",
+    "title": "Deconstruction Tree",
     "tags": [
-      "greedy",
-      "strings"
+      "combinatorics",
+      "data structures",
+      "dp",
+      "graphs",
+      "trees"
+    ],
+    "difficulty": 2100
+  },
+  {
+    "problem_id": "cf_106570_L",
+    "contest_id": "cf_106570",
+    "label": "L",
+    "title": "博德之跃 3",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_106570_K",
+    "contest_id": "cf_106570",
+    "label": "K",
+    "title": "环基基环树",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_106570_H",
+    "contest_id": "cf_106570",
+    "label": "H",
+    "title": "最大权独立集问题",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_106570_G",
+    "contest_id": "cf_106570",
+    "label": "G",
+    "title": "禁忌教典的消失咒文",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_106570_F",
+    "contest_id": "cf_106570",
+    "label": "F",
+    "title": "交换余生",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_106570_E",
+    "contest_id": "cf_106570",
+    "label": "E",
+    "title": "永恒的奥古斯都",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_106570_D",
+    "contest_id": "cf_106570",
+    "label": "D",
+    "title": "那一天的回文字符串",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_106570_C",
+    "contest_id": "cf_106570",
+    "label": "C",
+    "title": "精灵对战",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_106570_A",
+    "contest_id": "cf_106570",
+    "label": "A",
+    "title": "那一年的秘密基地",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_2232_E",
+    "contest_id": "cf_2232",
+    "label": "E",
+    "title": "Snaking Arrangement",
+    "tags": [
+      "combinatorics",
+      "constructive algorithms"
+    ],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_2232_D",
+    "contest_id": "cf_2232",
+    "label": "D",
+    "title": "Magical Tiered Cake",
+    "tags": [
+      "constructive algorithms",
+      "dfs and similar",
+      "dp",
+      "greedy"
+    ],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_1009_F",
+    "contest_id": "cf_1009",
+    "label": "F",
+    "title": "Dominant Indices",
+    "tags": [
+      "data structures",
+      "dsu",
+      "trees"
+    ],
+    "difficulty": 2300
+  },
+  {
+    "problem_id": "cf_2230_F",
+    "contest_id": "cf_2230",
+    "label": "F",
+    "title": "Game on Growing Tree",
+    "tags": [
+      "binary search",
+      "dfs and similar",
+      "divide and conquer",
+      "dp",
+      "games",
+      "implementation",
+      "trees"
+    ],
+    "difficulty": 2700
+  },
+  {
+    "problem_id": "cf_2230_A",
+    "contest_id": "cf_2230",
+    "label": "A",
+    "title": "Optimal Purchase",
+    "tags": [
+      "implementation",
+      "math"
     ],
     "difficulty": 800
   },
   {
-    "problem_id": "cf_2207_B",
-    "contest_id": "cf_2207",
+    "problem_id": "cf_2230_B",
+    "contest_id": "cf_2230",
     "label": "B",
-    "title": "One Night At Freddy's",
+    "title": "Digit String",
     "tags": [
-      "games",
       "greedy",
-      "sortings"
+      "implementation",
+      "math"
     ],
-    "difficulty": 1600
+    "difficulty": 1000
   },
   {
-    "problem_id": "cf_2207_C",
-    "contest_id": "cf_2207",
+    "problem_id": "cf_2230_C",
+    "contest_id": "cf_2230",
     "label": "C",
-    "title": "Where's My Water?",
+    "title": "Arrange the Numbers in a Circle",
+    "tags": [
+      "constructive algorithms",
+      "implementation",
+      "math"
+    ],
+    "difficulty": 1300
+  },
+  {
+    "problem_id": "cf_2230_D",
+    "contest_id": "cf_2230",
+    "label": "D",
+    "title": "Good Schedule",
+    "tags": [
+      "dp",
+      "greedy"
+    ],
+    "difficulty": 1700
+  },
+  {
+    "problem_id": "cf_2230_E",
+    "contest_id": "cf_2230",
+    "label": "E",
+    "title": "Minimum Influence",
+    "tags": [
+      "binary search",
+      "data structures",
+      "greedy",
+      "implementation",
+      "math",
+      "sortings",
+      "two pointers"
+    ],
+    "difficulty": 2100
+  },
+  {
+    "problem_id": "cf_2222_F",
+    "contest_id": "cf_2222",
+    "label": "F",
+    "title": "Building Tree",
     "tags": [
       "data structures",
       "divide and conquer",
-      "dp",
-      "math"
+      "dsu",
+      "graphs",
+      "implementation"
     ],
-    "difficulty": 1600
+    "difficulty": 2600
   },
   {
-    "problem_id": "cf_2207_D",
-    "contest_id": "cf_2207",
+    "problem_id": "cf_2226_D",
+    "contest_id": "cf_2226",
     "label": "D",
-    "title": "Boxed Like a Fish",
+    "title": "Reserved Reversals",
+    "tags": [
+      "constructive algorithms",
+      "dp",
+      "greedy",
+      "math"
+    ],
+    "difficulty": 1900
+  },
+  {
+    "problem_id": "cf_2226_E",
+    "contest_id": "cf_2226",
+    "label": "E",
+    "title": "Mental Monumental (Hard Version)",
+    "tags": [
+      "data structures",
+      "greedy",
+      "math",
+      "two pointers"
+    ],
+    "difficulty": 2300
+  },
+  {
+    "problem_id": "cf_2222_E",
+    "contest_id": "cf_2222",
+    "label": "E",
+    "title": "Seek the Truth",
+    "tags": [
+      "binary search",
+      "bitmasks",
+      "constructive algorithms",
+      "interactive"
+    ],
+    "difficulty": 2000
+  },
+  {
+    "problem_id": "cf_2143_F",
+    "contest_id": "cf_2143",
+    "label": "F",
+    "title": "Increasing Xor",
+    "tags": [
+      "bitmasks",
+      "data structures",
+      "math"
+    ],
+    "difficulty": 2700
+  },
+  {
+    "problem_id": "cf_2225_G",
+    "contest_id": "cf_2225",
+    "label": "G",
+    "title": "Simple Problem",
+    "tags": [
+      "brute force",
+      "graphs",
+      "greedy",
+      "number theory"
+    ],
+    "difficulty": 2900
+  },
+  {
+    "problem_id": "cf_2225_E",
+    "contest_id": "cf_2225",
+    "label": "E",
+    "title": "Covering Points with Circles",
+    "tags": [
+      "constructive algorithms",
+      "geometry",
+      "math"
+    ],
+    "difficulty": 2200
+  },
+  {
+    "problem_id": "cf_2220_A",
+    "contest_id": "cf_2220",
+    "label": "A",
+    "title": "Blocked",
+    "tags": [
+      "greedy",
+      "sortings"
+    ],
+    "difficulty": 800
+  },
+  {
+    "problem_id": "cf_2220_B",
+    "contest_id": "cf_2220",
+    "label": "B",
+    "title": "OIE Excursion",
+    "tags": [
+      "greedy"
+    ],
+    "difficulty": 1200
+  },
+  {
+    "problem_id": "cf_2219_A",
+    "contest_id": "cf_2219",
+    "label": "A",
+    "title": "Grid L",
+    "tags": [
+      "brute force",
+      "constructive algorithms",
+      "math",
+      "number theory"
+    ],
+    "difficulty": 1400
+  },
+  {
+    "problem_id": "cf_2219_B1",
+    "contest_id": "cf_2219",
+    "label": "B1",
+    "title": "Unique Values (Easy version)",
+    "tags": [
+      "binary search",
+      "constructive algorithms",
+      "divide and conquer",
+      "interactive",
+      "math"
+    ],
+    "difficulty": 1900
+  },
+  {
+    "problem_id": "cf_2219_B2",
+    "contest_id": "cf_2219",
+    "label": "B2",
+    "title": "Unique Values (Hard version)",
+    "tags": [
+      "binary search",
+      "bitmasks",
+      "constructive algorithms",
+      "interactive"
+    ],
+    "difficulty": 2000
+  },
+  {
+    "problem_id": "cf_2219_C",
+    "contest_id": "cf_2219",
+    "label": "C",
+    "title": "Coloring a Red Black Tree",
     "tags": [
       "dfs and similar",
       "dp",
-      "games",
-      "shortest paths",
+      "greedy",
+      "math",
+      "probabilities",
+      "trees"
+    ],
+    "difficulty": 2300
+  },
+  {
+    "problem_id": "cf_2219_D",
+    "contest_id": "cf_2219",
+    "label": "D",
+    "title": "MEX Replacement on Tree",
+    "tags": [
+      "data structures",
+      "implementation",
+      "math",
+      "trees"
+    ],
+    "difficulty": 2700
+  },
+  {
+    "problem_id": "cf_105869_I",
+    "contest_id": "cf_105869",
+    "label": "I",
+    "title": "Random Remainders",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_104197_A",
+    "contest_id": "cf_104197",
+    "label": "A",
+    "title": "Adjacent Product Sum",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_104925_B",
+    "contest_id": "cf_104925",
+    "label": "B",
+    "title": "Binary Sequence",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_2211_E",
+    "contest_id": "cf_2211",
+    "label": "E",
+    "title": "Minimum Path Cover",
+    "tags": [
+      "brute force",
+      "dp",
+      "greedy",
+      "interactive",
+      "math",
+      "number theory",
+      "trees"
+    ],
+    "difficulty": 2500
+  },
+  {
+    "problem_id": "cf_2211_D",
+    "contest_id": "cf_2211",
+    "label": "D",
+    "title": "AND-array",
+    "tags": [
+      "bitmasks",
+      "combinatorics",
+      "math"
+    ],
+    "difficulty": 1900
+  },
+  {
+    "problem_id": "cf_2210_D",
+    "contest_id": "cf_2210",
+    "label": "D",
+    "title": "A Simple RBS Problem",
+    "tags": [
+      "constructive algorithms",
+      "math",
+      "strings",
+      "trees"
+    ],
+    "difficulty": 2100
+  },
+  {
+    "problem_id": "cf_2210_E",
+    "contest_id": "cf_2210",
+    "label": "E",
+    "title": "Binary Strings are Simple?",
+    "tags": [
+      "constructive algorithms",
+      "implementation",
+      "interactive",
+      "number theory"
+    ],
+    "difficulty": 2700
+  },
+  {
+    "problem_id": "cf_383_E",
+    "contest_id": "cf_383",
+    "label": "E",
+    "title": "Vowels",
+    "tags": [
+      "combinatorics",
+      "divide and conquer",
+      "dp"
+    ],
+    "difficulty": 2700
+  },
+  {
+    "problem_id": "cf_449_D",
+    "contest_id": "cf_449",
+    "label": "D",
+    "title": "Jzzhu and Numbers",
+    "tags": [
+      "bitmasks",
+      "combinatorics",
+      "dp"
+    ],
+    "difficulty": 2400
+  },
+  {
+    "problem_id": "cf_1208_F",
+    "contest_id": "cf_1208",
+    "label": "F",
+    "title": "Bits And Pieces",
+    "tags": [
+      "bitmasks",
+      "dfs and similar",
+      "dp",
+      "greedy"
+    ],
+    "difficulty": 2600
+  },
+  {
+    "problem_id": "cf_2204_G",
+    "contest_id": "cf_2204",
+    "label": "G",
+    "title": "Grid Path",
+    "tags": [
+      "dp",
+      "graphs",
+      "matrices"
+    ],
+    "difficulty": 2700
+  },
+  {
+    "problem_id": "cf_2209_F",
+    "contest_id": "cf_2209",
+    "label": "F",
+    "title": "Dynamic Values And Maximum Sum",
+    "tags": [
+      "data structures",
+      "greedy",
+      "implementation",
+      "trees"
+    ],
+    "difficulty": 2700
+  },
+  {
+    "problem_id": "cf_2204_F",
+    "contest_id": "cf_2204",
+    "label": "F",
+    "title": "Sum of Fractions",
+    "tags": [
+      "binary search",
+      "brute force",
+      "combinatorics",
+      "data structures",
+      "greedy",
+      "math",
+      "number theory",
+      "two pointers"
+    ],
+    "difficulty": 2200
+  },
+  {
+    "problem_id": "cf_2208_D2",
+    "contest_id": "cf_2208",
+    "label": "D2",
+    "title": "Tree Orientation (Hard Version)",
+    "tags": [
+      "dfs and similar",
+      "dsu",
+      "graphs",
+      "greedy",
+      "sortings",
       "trees"
     ],
     "difficulty": 2200
   },
   {
-    "problem_id": "cf_2207_E1",
-    "contest_id": "cf_2207",
-    "label": "E1",
-    "title": "N-MEX (Constructive Version)",
+    "problem_id": "cf_105465_E",
+    "contest_id": "cf_105465",
+    "label": "E",
+    "title": "Eliminate Tree",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_105465_F",
+    "contest_id": "cf_105465",
+    "label": "F",
+    "title": "Fast XORting",
+    "tags": [],
+    "difficulty": null
+  },
+  {
+    "problem_id": "cf_2200_H",
+    "contest_id": "cf_2200",
+    "label": "H",
+    "title": "Six Seven",
     "tags": [
-      "constructive algorithms",
-      "greedy"
+      "divide and conquer",
+      "math",
+      "number theory",
+      "strings",
+      "trees"
     ],
-    "difficulty": 2100
+    "difficulty": 2600
   },
   {
     "problem_id": "cf_2207_E2",
@@ -73,75 +593,14 @@
     "difficulty": 2400
   },
   {
-    "problem_id": "cf_2207_F",
+    "problem_id": "cf_2207_E1",
     "contest_id": "cf_2207",
-    "label": "F",
-    "title": "Hanabi",
+    "label": "E1",
+    "title": "N-MEX (Constructive Version)",
     "tags": [
-      "binary search",
-      "data structures",
-      "dp",
-      "dsu",
-      "flows",
-      "graph matchings",
-      "graphs",
+      "constructive algorithms",
       "greedy"
     ],
-    "difficulty": 2900
-  },
-  {
-    "problem_id": "cf_2207_G",
-    "contest_id": "cf_2207",
-    "label": "G",
-    "title": "Toothless",
-    "tags": [
-      "constructive algorithms",
-      "dfs and similar",
-      "dsu"
-    ],
-    "difficulty": 3300
-  },
-  {
-    "problem_id": "cf_2207_H1",
-    "contest_id": "cf_2207",
-    "label": "H1",
-    "title": "Bowser's Castle (Easy Version)",
-    "tags": [
-      "binary search",
-      "constructive algorithms",
-      "divide and conquer",
-      "greedy",
-      "interactive",
-      "trees"
-    ],
-    "difficulty": null
-  },
-  {
-    "problem_id": "cf_2207_H2",
-    "contest_id": "cf_2207",
-    "label": "H2",
-    "title": "Bowser's Castle (Medium Version)",
-    "tags": [
-      "constructive algorithms",
-      "divide and conquer",
-      "interactive",
-      "trees",
-      "two pointers"
-    ],
-    "difficulty": null
-  },
-  {
-    "problem_id": "cf_2207_H3",
-    "contest_id": "cf_2207",
-    "label": "H3",
-    "title": "Bowser's Castle (Hard Version)",
-    "tags": [
-      "constructive algorithms",
-      "divide and conquer",
-      "interactive",
-      "trees",
-      "two pointers"
-    ],
-    "difficulty": null
+    "difficulty": 2100
   }
 ]
